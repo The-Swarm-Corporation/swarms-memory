@@ -34,6 +34,18 @@
 [![Share on Reddit](https://img.shields.io/badge/-Share%20on%20Reddit-orange)](https://www.reddit.com/submit?url=https%3A%2F%2Fgithub.com%2Fkyegomez%2Fswarms&title=Swarms%20-%20the%20future%20of%20AI) [![Share on Hacker News](https://img.shields.io/badge/-Share%20on%20Hacker%20News-orange)](https://news.ycombinator.com/submitlink?u=https%3A%2F%2Fgithub.com%2Fkyegomez%2Fswarms&t=Swarms%20-%20the%20future%20of%20AI) [![Share on Pinterest](https://img.shields.io/badge/-Share%20on%20Pinterest-red)](https://pinterest.com/pin/create/button/?url=https%3A%2F%2Fgithub.com%2Fkyegomez%2Fswarms&media=https%3A%2F%2Fexample.com%2Fimage.jpg&description=Swarms%20-%20the%20future%20of%20AI) [![Share on WhatsApp](https://img.shields.io/badge/-Share%20on%20WhatsApp-green)](https://api.whatsapp.com/send?text=Check%20out%20Swarms%20-%20the%20future%20of%20AI%20%23swarms%20%23AI%0A%0Ahttps%3A%2F%2Fgithub.com%2Fkyegomez%2Fswarms)
 
 
+Here's a more detailed and larger table with descriptions and website links for each RAG system:
+
+| **RAG System** | **Status**  | **Description**                                                                 | **Documentation**                                     | **Website**                      |
+|----------------|-------------|---------------------------------------------------------------------------------|-------------------------------------------------------|----------------------------------|
+| **ChromaDB**   | Available   | A high-performance, distributed database optimized for handling large-scale AI tasks. | [ChromaDB Documentation](swarms_memory/memory/chromadb.md) | [ChromaDB](https://chromadb.com) |
+| **Pinecone**   | Available   | A fully managed vector database that makes it easy to add vector search to your applications. | [Pinecone Documentation](swarms_memory/memory/pinecone.md) | [Pinecone](https://pinecone.io) |
+| **Redis**      | Coming Soon | An open-source, in-memory data structure store, used as a database, cache, and message broker. | [Redis Documentation](swarms_memory/memory/redis.md) | [Redis](https://redis.io)       |
+| **Faiss**      | Coming Soon | A library for efficient similarity search and clustering of dense vectors, developed by Facebook AI. | [Faiss Documentation](swarms_memory/memory/faiss.md) | [Faiss](https://faiss.ai)       |
+| **HNSW**       | Coming Soon | A graph-based algorithm for approximate nearest neighbor search, known for its speed and accuracy. | [HNSW Documentation](swarms_memory/memory/hnsw.md)   | [HNSW](https://github.com/nmslib/hnswlib) |
+
+This table includes a brief description of each system, their current status, links to their documentation, and their respective websites for further information.
+
 
 ### Requirements:
 - `python 3.10` 
@@ -43,6 +55,8 @@
 ```bash
 $ pip install swarms-memory
 ```
+
+
 
 
 ## Usage
