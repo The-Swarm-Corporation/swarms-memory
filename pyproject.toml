@@ -24,6 +24,10 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.10"
 swarms = "*"
+chromadb = "*"
+loguru = "*"
+sentence-transformers = "*"
+pinecone = "*"
 
 
 [tool.poetry.group.lint.dependencies]

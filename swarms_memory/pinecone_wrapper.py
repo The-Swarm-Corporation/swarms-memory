@@ -1,10 +1,12 @@
-from typing import List, Dict, Any, Callable, Optional
+from typing import Any, Callable, Dict, List, Optional
+
 import pinecone
 from loguru import logger
 from sentence_transformers import SentenceTransformer
+from swarms.memory.base_vectordb import BaseVectorDatabase
 
 
-class PineconeMemory:
+class PineconeMemory(BaseVectorDatabase):
     """
     A highly customizable wrapper class for Pinecone-based Retrieval-Augmented Generation (RAG) system.
 
