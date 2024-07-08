@@ -15,7 +15,7 @@ load_dotenv()
 
 
 # Results storage using local ChromaDB
-class ChromaDBMemory(BaseVectorDatabase):
+class ChromaDB(BaseVectorDatabase):
     """
 
     ChromaDB database

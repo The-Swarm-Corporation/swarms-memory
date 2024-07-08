@@ -1,11 +1,11 @@
 from unittest.mock import patch, MagicMock
-from swarms_memory.chroma_db_wrapper import ChromaDBMemory
+from swarms_memory.chroma_db_wrapper import ChromaDB
 
 
 @patch("chromadb.PersistentClient")
 @patch("chromadb.Client")
 def test_init(mock_client, mock_persistent_client):
-    chroma_db = ChromaDBMemory(
+    chroma_db = ChromaDB(
         metric="cosine",
         output_dir="swarms",
         limit_tokens=1000,
@@ -26,7 +26,7 @@ def test_init(mock_client, mock_persistent_client):
 @patch("chromadb.PersistentClient")
 @patch("chromadb.Client")
 def test_add(mock_client, mock_persistent_client):
-    chroma_db = ChromaDBMemory()
+    chroma_db = ChromaDB()
     mock_collection = MagicMock()
     chroma_db.collection = mock_collection
     doc_id = chroma_db.add("test document")
@@ -39,7 +39,7 @@ def test_add(mock_client, mock_persistent_client):
 @patch("chromadb.PersistentClient")
 @patch("chromadb.Client")
 def test_query(mock_client, mock_persistent_client):
-    chroma_db = ChromaDBMemory()
+    chroma_db = ChromaDB()
     mock_collection = MagicMock()
     chroma_db.collection = mock_collection
     mock_collection.query.return_value = {
@@ -55,11 +55,11 @@ def test_query(mock_client, mock_persistent_client):
 @patch("chromadb.PersistentClient")
 @patch("chromadb.Client")
 @patch("os.walk")
-@patch("swarms_memory.chroma_db_wrapper.ChromaDBMemory.add")
+@patch("swarms_memory.chroma_db_wrapper.ChromaDB.add")
 def test_traverse_directory(
     mock_add, mock_walk, mock_client, mock_persistent_client
 ):
-    chroma_db = ChromaDBMemory(docs_folder="test_folder")
+    chroma_db = ChromaDB(docs_folder="test_folder")
     mock_walk.return_value = [("root", "dirs", ["file1", "file2"])]
     chroma_db.traverse_directory()
     assert mock_add.call_count == 2
