@@ -1,3 +1,5 @@
-torch
-zetascale
+chromadb
 swarms
+loguru 
+sentence-transformers
+pinecone
