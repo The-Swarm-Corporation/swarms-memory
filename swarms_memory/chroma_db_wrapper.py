@@ -51,6 +51,7 @@ class ChromaDB(BaseVectorDatabase):
         *args,
         **kwargs,
     ):
+        super().__init__(*args, **kwargs)
         self.metric = metric
         self.output_dir = output_dir
         self.limit_tokens = limit_tokens

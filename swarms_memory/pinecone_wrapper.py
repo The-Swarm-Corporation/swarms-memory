@@ -51,6 +51,7 @@ class PineconeMemory(BaseVectorDatabase):
             namespace (str): Pinecone namespace. Defaults to ''.
             logger_config (Optional[Dict]): Configuration for the logger. Defaults to None.
         """
+        super().__init__()
         self._setup_logger(logger_config)
         logger.info("Initializing PineconeMemory")
 

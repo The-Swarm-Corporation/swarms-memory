@@ -17,8 +17,8 @@ def test_init(mock_client, mock_persistent_client):
     assert chroma_db.output_dir == "swarms"
     assert chroma_db.limit_tokens == 1000
     assert chroma_db.n_results == 1
-    assert chroma_db.docs_folder == None
-    assert chroma_db.verbose == False
+    assert chroma_db.docs_folder is None
+    assert chroma_db.verbose is False
     mock_persistent_client.assert_called_once()
     mock_client.assert_called_once()
 
