@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "swarms-memory"
-version = "0.0.2"
+version = "0.0.3"
 description = "Swarms Memory - Pytorch"
 license = "MIT"
 authors = ["Kye Gomez <kye@apac.ai>"]
@@ -23,11 +23,13 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
-swarms = "*"
+torch = "*"
 chromadb = "*"
 loguru = "*"
 sentence-transformers = "*"
 pinecone = "*"
+faiss = "*"
+
 
 
 [tool.poetry.group.lint.dependencies]
