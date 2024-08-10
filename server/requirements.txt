@@ -1,0 +1,4 @@
+chromadb
+fastapi
+pydantic
+loguru

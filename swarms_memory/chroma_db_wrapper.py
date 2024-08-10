@@ -5,10 +5,10 @@ from typing import Optional
 
 import chromadb
 from dotenv import load_dotenv
-
+from loguru import logger
+from swarms.memory.base_vectordb import BaseVectorDatabase
 from swarms.utils.data_to_text import data_to_text
 from swarms.utils.markdown_message import display_markdown_message
-from swarms.memory.base_vectordb import BaseVectorDatabase
 
 # Load environment variables
 load_dotenv()
@@ -165,7 +165,9 @@ class ChromaDB(BaseVectorDatabase):
         except Exception as e:
             raise Exception(f"Failed to query documents: {str(e)}")
 
-    def traverse_directory(self):
+    def traverse_directory(
+        self, docs_folder: str = None, *args, **kwargs
+    ):
         """
         Traverse through every file in the given directory and its subdirectories,
         and return the paths of all files.
@@ -174,16 +176,42 @@ class ChromaDB(BaseVectorDatabase):
         Returns:
         - list: A list of paths to each file in the directory and its subdirectories.
         """
-        added_to_db = False
+        try:
+            logger.info(f"Traversing directory: {self.docs_folder}")
+            added_to_db = False
+            allowed_extensions = [
+                "txt",
+                "pdf",
+                "docx",
+                "doc",
+                "md",
+                "yaml",
+                "json",
+                "csv",
+                "tsv",
+                "xls",
+                "xlsx",
+                "xml",
+                "yml",
+            ]
 
-        for root, dirs, files in os.walk(self.docs_folder):
-            for file in files:
-                file_path = os.path.join(
-                    root, file
-                )  # Change this line
-                _, ext = os.path.splitext(file_path)
-                data = data_to_text(file_path)
-                added_to_db = self.add(str(data))
-                print(f"{file_path} added to Database")
+            for root, dirs, files in os.walk(self.docs_folder):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    _, ext = os.path.splitext(file_path)
+                    if ext.lower() in allowed_extensions:
+                        data = data_to_text(file_path)
+                        added_to_db = self.add(str(data))
+                        print(f"{file_path} added to Database")
+                    else:
+                        print(
+                            f"Skipped {file_path} due to unsupported file extension"
+                        )
 
-        return added_to_db
+            return added_to_db
+
+        except Exception as error:
+            logger.error(
+                f"Failed to traverse directory: {str(error)}"
+            )
+            raise error
