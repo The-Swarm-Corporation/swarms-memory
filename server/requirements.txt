@@ -2,3 +2,4 @@ chromadb
 fastapi
 pydantic
 loguru
+faiss-gpu

@@ -2,5 +2,5 @@ chromadb
 loguru 
 sentence-transformers
 pinecone
-faiss
+faiss-cpu
 torch

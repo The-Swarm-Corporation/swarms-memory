@@ -29,4 +29,5 @@ COPY . .
 EXPOSE 8000
 
 # Command to run the application with Uvicorn and Gunicorn
-CMD ["gunicorn", "main:api", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"]
+# CMD ["gunicorn", "api:api", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"]
+CMD ["python3", "api.py"]
