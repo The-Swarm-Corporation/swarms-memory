@@ -58,7 +58,7 @@ def create_collection(request: CreateCollectionRequest):
     Creates a new collection with the specified name.
     """
     try:
-        collection = chroma_client.create_collection(
+        chroma_client.create_collection(
             name=request.name
         )
         logger.info(f"Created collection with name: {request.name}")

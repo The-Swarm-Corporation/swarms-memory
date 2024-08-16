@@ -58,7 +58,7 @@ def test_add_documents(collection_url, setup_collection):
     data = {
         "documents": [
             "This is a document about pineapples",
-            "This is a document about oranges"
+            "This is a document about oranges",
         ],
     }
     response = requests.post(url, json=data)
@@ -77,7 +77,7 @@ def test_query_documents(collection_url, setup_collection):
     url = f"{collection_url}/{setup_collection}/documents"
     data = {
         "query_texts": ["This is a query document about Hawaii"],
-        "n_results": 2
+        "n_results": 2,
     }
     response = requests.get(url, json=data)
     assert response.status_code == 200
@@ -85,12 +85,16 @@ def test_query_documents(collection_url, setup_collection):
     assert "results" in response_json
 
 
-def test_delete_document(collection_url, setup_collection, test_add_documents):
+def test_delete_document(
+    collection_url, setup_collection, test_add_documents
+):
     """
     Test deleting a document from a collection.
     """
     document_id = test_add_documents  # Use the document ID from the add documents test
-    url = f"{collection_url}/{setup_collection}/documents/{document_id}"
+    url = (
+        f"{collection_url}/{setup_collection}/documents/{document_id}"
+    )
     response = requests.delete(url)
     assert response.status_code == 200
     response_json = response.json()
