@@ -1,11 +1,12 @@
-from fastapi import FastAPI, HTTPException, Path, Body
-from pydantic import BaseModel, Field
-from typing import List, Optional
-from loguru import logger
-import chromadb
-import uuid
 import os
+import uuid
+from typing import List, Optional
+
+import chromadb
 import uvicorn
+from fastapi import Body, FastAPI, HTTPException, Path
+from loguru import logger
+from pydantic import BaseModel, Field
 
 app = FastAPI()
 
