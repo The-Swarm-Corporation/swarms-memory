@@ -5,7 +5,7 @@
   </a>
 </div>
 <p align="center">
-  <em>Easy to use, reliable, and bleeding-edge RAG systems.</em>
+  <em>The Enterprise-Grade Production-Ready RAG Framework</em>
 </p>
 
 <p align="center">
