@@ -1,5 +1,5 @@
 from typing import List, Dict, Any
-from swarms_memory.faiss_wrapper import FAISSDB
+from swarms_memory.vector_dbs.faiss_wrapper import FAISSDB
 
 
 from transformers import AutoTokenizer, AutoModel

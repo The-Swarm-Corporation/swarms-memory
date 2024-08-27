@@ -1,4 +1,3 @@
-import logging
 import os
 import uuid
 from typing import Optional
@@ -8,7 +7,6 @@ from dotenv import load_dotenv
 from loguru import logger
 from swarms.memory.base_vectordb import BaseVectorDatabase
 from swarms.utils.data_to_text import data_to_text
-from swarms.utils.markdown_message import display_markdown_message
 
 # Load environment variables
 load_dotenv()
@@ -59,10 +57,6 @@ class ChromaDB(BaseVectorDatabase):
         self.docs_folder = docs_folder
         self.verbose = verbose
 
-        # Disable ChromaDB logging
-        if verbose:
-            logging.getLogger("chromadb").setLevel(logging.INFO)
-
         # Create Chroma collection
         chroma_persist_dir = "chroma"
         chroma_client = chromadb.PersistentClient(
@@ -83,7 +77,7 @@ class ChromaDB(BaseVectorDatabase):
             *args,
             **kwargs,
         )
-        display_markdown_message(
+        logger.info(
             "ChromaDB collection created:"
             f" {self.collection.name} with metric: {self.metric} and"
             f" output directory: {self.output_dir}"
@@ -91,7 +85,7 @@ class ChromaDB(BaseVectorDatabase):
 
         # If docs
         if docs_folder:
-            display_markdown_message(
+            logger.info(
                 f"Traversing directory: {docs_folder}"
             )
             self.traverse_directory()
@@ -144,7 +138,7 @@ class ChromaDB(BaseVectorDatabase):
             dict: The retrieved documents.
         """
         try:
-            logging.info(f"Querying documents for: {query_text}")
+            logger.info(f"Querying documents for: {query_text}")
             docs = self.collection.query(
                 query_texts=[query_text],
                 n_results=self.n_results,
@@ -158,8 +152,8 @@ class ChromaDB(BaseVectorDatabase):
                 out += f"{doc}\n"
 
             # Display the retrieved document
-            display_markdown_message(f"Query: {query_text}")
-            display_markdown_message(f"Retrieved Document: {out}")
+            logger.info(f"Query: {query_text}")
+            logger.info(f"Retrieved Document: {out}")
             return out
 
         except Exception as e:

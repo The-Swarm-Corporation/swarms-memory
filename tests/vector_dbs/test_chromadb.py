@@ -1,5 +1,5 @@
 from unittest.mock import patch, MagicMock
-from swarms_memory.chroma_db_wrapper import ChromaDB
+from swarms_memory.vector_dbs.chroma_db_wrapper import ChromaDB
 
 
 @patch("chromadb.PersistentClient")

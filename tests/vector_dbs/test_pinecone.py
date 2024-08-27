@@ -1,5 +1,5 @@
 from unittest.mock import patch
-from swarms_memory.pinecone_wrapper import PineconeMemory
+from swarms_memory.vector_dbs.pinecone_wrapper import PineconeMemory
 
 
 @patch("pinecone.init")

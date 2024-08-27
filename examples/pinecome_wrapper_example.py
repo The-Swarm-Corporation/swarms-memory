@@ -1,5 +1,5 @@
 from typing import List, Dict, Any
-from swarms_memory.pinecone_wrapper import PineconeMemory
+from swarms_memory.vector_dbs.pinecone_wrapper import PineconeMemory
 
 
 # Example usage
