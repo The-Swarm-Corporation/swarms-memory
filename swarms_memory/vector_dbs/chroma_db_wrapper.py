@@ -85,9 +85,7 @@ class ChromaDB(BaseVectorDatabase):
 
         # If docs
         if docs_folder:
-            logger.info(
-                f"Traversing directory: {docs_folder}"
-            )
+            logger.info(f"Traversing directory: {docs_folder}")
             self.traverse_directory()
 
     def add(

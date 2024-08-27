@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from dotenv import load_dotenv
 
-from examples.memory.pg import PostgresDB
+from swarms_memory.dbs.pg import PostgresDB
 
 load_dotenv()
 

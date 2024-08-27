@@ -1,6 +1,7 @@
 from abc import ABC
 from loguru import logger
 
+
 class BaseVectorDatabase(ABC):
     """
     Abstract base class for a database.

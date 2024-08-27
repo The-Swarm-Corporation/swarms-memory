@@ -2,6 +2,7 @@ import json
 import logging
 import threading
 
+
 class ShortTermMemory:
     """Short term memory.
 
@@ -37,7 +38,9 @@ class ShortTermMemory:
         self.medium_term_memory = []
         self.lock = threading.Lock()
 
-    def add(self, role: str = None, message: str = None, *args, **kwargs):
+    def add(
+        self, role: str = None, message: str = None, *args, **kwargs
+    ):
         """Add a message to the short term memory.
 
         Args:
@@ -155,7 +158,9 @@ class ShortTermMemory:
                 with open(filename, "w") as f:
                     json.dump(
                         {
-                            "short_term_memory": (self.short_term_memory),
+                            "short_term_memory": (
+                                self.short_term_memory
+                            ),
                             "medium_term_memory": (
                                 self.medium_term_memory
                             ),
@@ -177,7 +182,9 @@ class ShortTermMemory:
             with self.lock:
                 with open(filename) as f:
                     data = json.load(f)
-                self.short_term_memory = data.get("short_term_memory", [])
+                self.short_term_memory = data.get(
+                    "short_term_memory", []
+                )
                 self.medium_term_memory = data.get(
                     "medium_term_memory", []
                 )
