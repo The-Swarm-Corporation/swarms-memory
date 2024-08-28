@@ -3,12 +3,23 @@ from typing import Optional
 import pinecone
 from attr import define, field
 
-from swarms_memory import BaseVectorDatabase
-from swarms.utils import str_to_hash
+from swarms_memory.dbs.base_db import AbstractDatabase
+
+
+def str_to_hash(s: str) -> str:
+    """Converts a string to a hash.
+
+    Args:
+        s (str): The string to convert.
+
+    Returns:
+        str: The hash of the string.
+    """
+    return str(hash(s))
 
 
 @define
-class PineconeDB(BaseVectorDatabase):
+class PineconeDB(AbstractDatabase):
     """
     PineconeDB is a vector storage driver that uses Pinecone as the underlying storage engine.
 

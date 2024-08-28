@@ -5,7 +5,7 @@ from typing import Optional
 import chromadb
 from dotenv import load_dotenv
 from loguru import logger
-from swarms.memory.base_vectordb import BaseVectorDatabase
+from swarms_memory.vector_dbs.base_vectordb import BaseVectorDatabase
 from swarms.utils.data_to_text import data_to_text
 
 # Load environment variables

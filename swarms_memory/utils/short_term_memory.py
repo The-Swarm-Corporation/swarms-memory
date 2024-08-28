@@ -14,7 +14,7 @@ class ShortTermMemory:
 
 
     Example:
-    >>> from swarms.memory.short_term_memory import ShortTermMemory
+    >>> from swarms_memory.short_term_memory import ShortTermMemory
     >>> stm = ShortTermMemory()
     >>> stm.add(role="agent", message="Hello world!")
     >>> stm.add(role="agent", message="How are you?")

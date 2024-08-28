@@ -5,10 +5,10 @@ from sqlalchemy import JSON, Column, String, create_engine
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
-from swarms_memory import BaseVectorDatabase
+from swarms_memory.dbs.base_db import AbstractDatabase
 
 
-class PostgresDB(BaseVectorDatabase):
+class PostgresDB(AbstractDatabase):
     """
     A class representing a Postgres database.
 

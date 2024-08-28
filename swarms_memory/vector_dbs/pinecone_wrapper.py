@@ -3,8 +3,7 @@ from typing import Any, Callable, Dict, List, Optional
 import pinecone
 from loguru import logger
 from sentence_transformers import SentenceTransformer
-from swarms.memory.base_vectordb import BaseVectorDatabase
-
+from swarms_memory.vector_dbs.base_vectordb import BaseVectorDatabase
 
 class PineconeMemory(BaseVectorDatabase):
     """
