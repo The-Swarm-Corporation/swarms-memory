@@ -6,4 +6,3 @@ faiss-cpu
 torch
 pydantic
 sqlalchemy
-sqlite3
