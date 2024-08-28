@@ -1,0 +1,8 @@
+chromadb
+loguru 
+sentence-transformers
+pinecone
+faiss-cpu
+torch
+pydantic
+sqlalchemy

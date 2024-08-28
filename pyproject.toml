@@ -1,0 +1,62 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "swarms-memory"
+version = "0.1.2"
+description = "Swarms Memory - Pytorch"
+license = "MIT"
+authors = ["Kye Gomez <kye@apac.ai>"]
+homepage = "https://github.com/kyegomez/swarms-memory"
+documentation = "https://github.com/kyegomez/swarms-memory"
+readme = "README.md"  # Assuming you have a README.md
+repository = "https://github.com/kyegomez/swarms-memory"
+keywords = ["artificial intelligence", "deep learning", "optimizers", "Prompt Engineering"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.9"
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+torch = "*"
+chromadb = "*"
+loguru = "*"
+sentence-transformers = "*"
+pinecone = "*"
+faiss-cpu = "*"
+pydantic = "*"
+sqlalchemy = "*"
+
+
+
+
+[tool.poetry.group.lint.dependencies]
+ruff = ">=0.4.8,<0.7.0"
+types-toml = "^0.10.8.1"
+types-redis = "^4.3.21.6"
+types-pytz = "^2024.1.0.20240417"
+black = "^24.4.2"
+types-chardet = "^5.0.4.6"
+mypy-protobuf = "^3.0.0"
+
+
+[tool.autopep8]
+max_line_length = 80
+ignore = "E501,W6"  # or ["E501", "W6"]
+in-place = true
+recursive = true
+aggressive = 3
+
+
+[tool.ruff]
+line-length = 70
+
+[tool.black]
+line-length = 70
+target-version = ['py38']
+preview = true
