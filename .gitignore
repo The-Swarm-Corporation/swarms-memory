@@ -15,6 +15,7 @@ develop-eggs/
 dist/
 downloads/
 eggs/
+agent_workspace
 .eggs/
 lib/
 lib64/
