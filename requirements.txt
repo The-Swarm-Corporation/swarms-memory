@@ -6,3 +6,4 @@ faiss-cpu
 torch
 pydantic
 sqlalchemy
+singlestoredb
