@@ -1,4 +1,3 @@
-
 <div align="center">
   <a href="https://swarms.world">
     <h1>Swarms Memory</h1>
@@ -39,8 +38,9 @@ Here's a more detailed and larger table with descriptions and website links for 
 | **ChromaDB**   | Available   | A high-performance, distributed database optimized for handling large-scale AI tasks. | [ChromaDB Documentation](swarms_memory/memory/chromadb.md) | [ChromaDB](https://chromadb.com) |
 | **Pinecone**   | Available   | A fully managed vector database that makes it easy to add vector search to your applications. | [Pinecone Documentation](swarms_memory/memory/pinecone.md) | [Pinecone](https://pinecone.io) |
 | **Redis**      | Coming Soon | An open-source, in-memory data structure store, used as a database, cache, and message broker. | [Redis Documentation](swarms_memory/memory/redis.md) | [Redis](https://redis.io)       |
-| **Faiss**      | Coming Soon | A library for efficient similarity search and clustering of dense vectors, developed by Facebook AI. | [Faiss Documentation](swarms_memory/memory/faiss.md) | [Faiss](https://faiss.ai)       |
-| **HNSW**       | Coming Soon | A graph-based algorithm for approximate nearest neighbor search, known for its speed and accuracy. | [HNSW Documentation](swarms_memory/memory/hnsw.md)   | [HNSW](https://github.com/nmslib/hnswlib) |
+| **Faiss**      | Available   | A library for efficient similarity search and clustering of dense vectors, developed by Facebook AI. | [Faiss Documentation](swarms_memory/memory/faiss.md) | [Faiss](https://faiss.ai)       |
+| **SingleStore**| Available   | A distributed SQL database that provides high-performance vector similarity search. | [SingleStore Documentation](swarms_memory/memory/singlestore.md) | [SingleStore](https://www.singlestore.com) |
+| **HNSW**       | Coming Soon | A graph-based algorithm for approximate nearest neighbor search. | [HNSW Documentation](swarms_memory/memory/hnsw.md) | [HNSW](https://github.com/nmslib/hnswlib) |
 
 This table includes a brief description of each system, their current status, links to their documentation, and their respective websites for further information.
 
@@ -259,6 +259,75 @@ for result in results:
 ```
 
 
+### SingleStore
+```python
+from swarms_memory.vector_dbs.singlestore_wrapper import SingleStoreDB
+
+# Initialize SingleStore with environment variables
+db = SingleStoreDB(
+    host="your_host",
+    port=3306,
+    user="your_user",
+    password="your_password",
+    database="your_database",
+    table_name="example_vectors",
+    dimension=768,  # Default dimension for all-MiniLM-L6-v2
+    namespace="example"
+)
+
+# Custom embedding function example (optional)
+def custom_embedding_function(text: str) -> List[float]:
+    # Your custom embedding logic here
+    return embeddings
+
+# Initialize with custom functions
+db = SingleStoreDB(
+    host="your_host",
+    port=3306,
+    user="your_user",
+    password="your_password",
+    database="your_database",
+    table_name="example_vectors",
+    dimension=768,
+    namespace="example",
+    embedding_function=custom_embedding_function,
+    preprocess_function=lambda x: x.lower(),  # Simple preprocessing
+    postprocess_function=lambda x: sorted(x, key=lambda k: k['similarity'], reverse=True)  # Sort by similarity
+)
+
+# Add documents with metadata
+doc_id = db.add(
+    document="SingleStore is a distributed SQL database that combines horizontal scalability with ACID guarantees.",
+    metadata={"source": "docs", "category": "database"}
+)
+
+# Query similar documents
+results = db.query(
+    query="How does SingleStore scale?",
+    top_k=3,
+    metadata_filter={"source": "docs"}
+)
+
+# Process results
+for result in results:
+    print(f"Document: {result['document']}")
+    print(f"Similarity: {result['similarity']:.4f}")
+    print(f"Metadata: {result['metadata']}\n")
+
+# Delete a document
+db.delete(doc_id)
+
+# Key features:
+# - Built on SingleStore's native vector similarity search
+# - Supports custom embedding models and functions
+# - Automatic table creation with optimized vector indexing
+# - Metadata filtering for refined searches
+# - Document preprocessing and postprocessing
+# - Namespace support for document organization
+# - SSL support for secure connections
+
+# For more examples, see the [SingleStore example](examples/singlestore_wrapper_example.py).
+```
 # License
 MIT
 
@@ -275,4 +344,3 @@ Please cite Swarms in your paper or your project if you found it beneficial in a
   note = {Accessed: Date}
 }
 ```
-
