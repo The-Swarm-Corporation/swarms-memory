@@ -33,14 +33,16 @@
 
 Here's a more detailed and larger table with descriptions and website links for each RAG system:
 
-| **RAG System** | **Status**  | **Description**                                                                 | **Documentation**                                     | **Website**                      |
-|----------------|-------------|---------------------------------------------------------------------------------|-------------------------------------------------------|----------------------------------|
-| **ChromaDB**   | Available   | A high-performance, distributed database optimized for handling large-scale AI tasks. | [ChromaDB Documentation](swarms_memory/memory/chromadb.md) | [ChromaDB](https://chromadb.com) |
-| **Pinecone**   | Available   | A fully managed vector database that makes it easy to add vector search to your applications. | [Pinecone Documentation](swarms_memory/memory/pinecone.md) | [Pinecone](https://pinecone.io) |
-| **Redis**      | Coming Soon | An open-source, in-memory data structure store, used as a database, cache, and message broker. | [Redis Documentation](swarms_memory/memory/redis.md) | [Redis](https://redis.io)       |
-| **Faiss**      | Available   | A library for efficient similarity search and clustering of dense vectors, developed by Facebook AI. | [Faiss Documentation](swarms_memory/memory/faiss.md) | [Faiss](https://faiss.ai)       |
-| **SingleStore**| Available   | A distributed SQL database that provides high-performance vector similarity search. | [SingleStore Documentation](swarms_memory/memory/singlestore.md) | [SingleStore](https://www.singlestore.com) |
-| **HNSW**       | Coming Soon | A graph-based algorithm for approximate nearest neighbor search. | [HNSW Documentation](swarms_memory/memory/hnsw.md) | [HNSW](https://github.com/nmslib/hnswlib) |
+| **RAG System**  | **Status**  | **Description**                                                                                      | **Website**                                |
+| --------------- | ----------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| **ChromaDB**    | Available   | A high-performance, distributed database optimized for handling large-scale AI tasks.                | [ChromaDB](https://chromadb.com)           |
+| **Pinecone**    | Available   | A fully managed vector database that makes it easy to add vector search to your applications.        | [Pinecone](https://pinecone.io)            |
+| **Redis**       | Coming Soon | An open-source, in-memory data structure store, used as a database, cache, and message broker.       | [Redis](https://redis.io)                  |
+| **Faiss**       | Available   | A library for efficient similarity search and clustering of dense vectors, developed by Facebook AI. | [Faiss](https://faiss.ai)                  |
+| **SingleStore** | Available   | A distributed SQL database that provides high-performance vector similarity search.                  | [SingleStore](https://www.singlestore.com) |
+| **Qdrant**      | Available   | An open-source, massive scale vector search engine written in Rust                                   | [Qdrant](https://qdrant.tech/)             |
+| **HNSW**        | Coming Soon | A graph-based algorithm for approximate nearest neighbor search.                                     | [HNSW](https://github.com/nmslib/hnswlib)  |
+
 
 This table includes a brief description of each system, their current status, links to their documentation, and their respective websites for further information.
 
@@ -328,6 +330,46 @@ db.delete(doc_id)
 
 # For more examples, see the [SingleStore example](examples/singlestore_wrapper_example.py).
 ```
+
+### Qdrant
+```python
+from qdrant_client import QdrantClient, models
+from swarms_memory.vector_dbs import QdrantDB
+
+# Example 1: In-memory QdrantDB (for experimentation)
+in_memory_client = QdrantClient(":memory:")
+
+# Example 2: Production QdrantDB with server
+# production_client = QdrantClient("localhost", port=6333)
+
+qdrant_memory = QdrantDB(
+    client=in_memory_client,
+    collection_name="demo_collection",
+    model_name="sentence-transformers/all-MiniLM-L6-v2",
+    distance=models.Distance.COSINE,
+    n_results=3
+)
+
+# Add documents
+documents = [
+    "Qdrant has Langchain integrations",
+    "Qdrant also has Llama Index integrations", 
+    "Qdrant is a vector similarity search engine"
+]
+
+for doc in documents:
+    doc_id = qdrant_memory.add(doc)
+    print(f"Added document with ID: {doc_id}")
+
+# Query documents
+query = "What integrations does Qdrant have?"
+results = qdrant_memory.query(query)
+print(f"Query: {query}")
+print(f"Results:\n{results}")
+
+# For more examples, see the [Qdrant example](examples/qdrant_wrapper_example.py).
+```
+
 # License
 MIT
 

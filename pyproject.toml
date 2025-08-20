@@ -32,6 +32,8 @@ faiss-cpu = "*"
 pydantic = "*"
 sqlalchemy = "*"
 singlestoredb = "*"
+qdrant-client = "*"
+fastembed = "*"
 
 
 
