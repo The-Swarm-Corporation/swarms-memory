@@ -331,43 +331,110 @@ db.delete(doc_id)
 # For more examples, see the [SingleStore example](examples/singlestore_wrapper_example.py).
 ```
 
-### Qdrant
+### Qdrant with Flexible Embeddings
+
+Qdrant now supports any embedding model through LiteLLM, providing maximum flexibility for local, cloud, and in-memory deployments:
+
 ```python
+import os
 from qdrant_client import QdrantClient, models
 from swarms_memory.vector_dbs import QdrantDB
 
-# Example 1: In-memory QdrantDB (for experimentation)
+# Example 1: In-memory Qdrant (for experimentation)
 in_memory_client = QdrantClient(":memory:")
-
-# Example 2: Production QdrantDB with server
-# production_client = QdrantClient("localhost", port=6333)
-
 qdrant_memory = QdrantDB(
     client=in_memory_client,
     collection_name="demo_collection",
     model_name="sentence-transformers/all-MiniLM-L6-v2",
     distance=models.Distance.COSINE,
-    n_results=3
+    n_results=3,
 )
 
-# Add documents
-documents = [
-    "Qdrant has Langchain integrations",
-    "Qdrant also has Llama Index integrations", 
-    "Qdrant is a vector similarity search engine"
+# Example 2: Qdrant Cloud with OpenAI embeddings
+cloud_client = QdrantClient(
+    url=os.getenv("QDRANT_URL"),  # Your cluster URL
+    api_key=os.getenv("QDRANT_API_KEY"),  # Your API key
+)
+
+rag_db = QdrantDB(
+    client=cloud_client,
+    embedding_model="text-embedding-3-small",
+    collection_name="openai_collection",
+    distance=models.Distance.COSINE,
+    n_results=1,  # Return only most relevant result
+)
+
+# Example 3: Local Qdrant server
+# Start with: docker run -p 6333:6333 qdrant/qdrant
+local_client = QdrantClient("localhost", port=6333)
+local_db = QdrantDB(
+    client=local_client,
+    collection_name="local_collection",
+    model_name="sentence-transformers/all-MiniLM-L6-v2",
+    distance=models.Distance.COSINE,
+    n_results=3,
+)
+
+# Supports Azure OpenAI, Cohere, Voyage AI, AWS Bedrock, and custom embedding functions
+# See examples/qdrant_wrapper_example.py for additional embedding model examples
+
+# Add test documents
+knowledge_docs = [
+    "Qdrant is a vector database for similarity search.",
+    "Vector embeddings represent text as numerical vectors.",
+    "Similarity search finds related documents using vector distance.",
+    "Qdrant supports in-memory, local, and cloud deployments.",
 ]
 
-for doc in documents:
-    doc_id = qdrant_memory.add(doc)
-    print(f"Added document with ID: {doc_id}")
+for doc in knowledge_docs:
+    rag_db.add(doc)
 
-# Query documents
-query = "What integrations does Qdrant have?"
-results = qdrant_memory.query(query)
-print(f"Query: {query}")
-print(f"Results:\n{results}")
+# Query similar documents
+results = rag_db.query("What is vector search?")
+print(f"Results: {results}")
+```
 
-# For more examples, see the [Qdrant example](examples/qdrant_wrapper_example.py).
+#### Qdrant Deployment Options
+
+**In-Memory**: Perfect for testing and experimentation
+```python
+client = QdrantClient(":memory:")
+```
+
+**Local Server**: For production workloads with full control
+```bash
+docker run -p 6333:6333 qdrant/qdrant
+```
+
+**Qdrant Cloud**: Managed service with scalability and reliability
+```python
+client = QdrantClient(url="https://your-cluster.qdrant.tech", api_key="your-key")
+```
+
+For comprehensive examples including all deployment types, see [`examples/qdrant_wrapper_example.py`](examples/qdrant_wrapper_example.py).
+
+#### Supported Embedding Models
+
+Through LiteLLM integration, QdrantDB supports:
+- **OpenAI**: `"text-embedding-3-small"`, `"text-embedding-3-large"`
+- **Azure OpenAI**: `"azure/your-deployment-name"`
+- **Cohere**: `"cohere/embed-english-v3.0"`, `"cohere/embed-multilingual-v3.0"`
+- **Voyage AI**: `"voyage/voyage-3-large"`, `"voyage/voyage-code-2"`
+- **AWS Bedrock**: `"bedrock/amazon.titan-embed-text-v1"`
+- **Custom Functions**: Any callable that takes text and returns a vector
+- **Qdrant Built-in**: `"qdrant:sentence-transformers/all-MiniLM-L6-v2"`
+
+For other vector databases (Pinecone, FAISS, SingleStore), you can use LiteLLM embeddings through their `embedding_function` parameter:
+
+```python
+from swarms_memory.embeddings import LiteLLMEmbeddings
+
+# Create embedder
+embedder = LiteLLMEmbeddings(model="text-embedding-3-small")
+
+# Use with any vector DB
+faiss_db = FAISSDB(embedding_function=embedder.embed_query)
+pinecone_db = PineconeMemory(embedding_function=embedder.embed_query)
 ```
 
 # License
