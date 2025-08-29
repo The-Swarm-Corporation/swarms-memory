@@ -4509,14 +4509,14 @@ types-cffi = "*"
 
 [[package]]
 name = "types-pytz"
-version = "2024.2.0.20241221"
+version = "2025.2.0.20250809"
 description = "Typing stubs for pytz"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["lint"]
 files = [
-    {file = "types_pytz-2024.2.0.20241221-py3-none-any.whl", hash = "sha256:8fc03195329c43637ed4f593663df721fef919b60a969066e22606edf0b53ad5"},
-    {file = "types_pytz-2024.2.0.20241221.tar.gz", hash = "sha256:06d7cde9613e9f7504766a0554a270c369434b50e00975b3a4a0f6eed0f2c1a9"},
+    {file = "types_pytz-2025.2.0.20250809-py3-none-any.whl", hash = "sha256:4f55ed1b43e925cf851a756fe1707e0f5deeb1976e15bf844bcaa025e8fbd0db"},
+    {file = "types_pytz-2025.2.0.20250809.tar.gz", hash = "sha256:222e32e6a29bb28871f8834e8785e3801f2dc4441c715cd2082b271eecbe21e5"},
 ]
 
 [[package]]
@@ -4967,4 +4967,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "d871faf6d1bd3cc188e79ef38f53cbe6fddf98e67667504690908cfda4709055"
+content-hash = "3b52926033f53605bd7d5d6bd289afbd0e310e7fb9d9f43cc9b67f5480055f13"
