@@ -1,6 +1,6 @@
 from typing import Any, Callable, Dict, List, Optional
 
-import pinecone
+from pinecone import Pinecone, ServerlessSpec
 from loguru import logger
 from sentence_transformers import SentenceTransformer
 from swarms_memory.vector_dbs.base_vectordb import BaseVectorDatabase
@@ -30,7 +30,8 @@ class PineconeMemory(BaseVectorDatabase):
             Callable[[List[Dict[str, Any]]], List[Dict[str, Any]]]
         ] = None,
         metric: str = "cosine",
-        pod_type: str = "p1",
+        cloud: str = "aws",
+        region: str = "us-east-1",
         namespace: str = "",
         logger_config: Optional[Dict[str, Any]] = None,
     ):
@@ -39,7 +40,7 @@ class PineconeMemory(BaseVectorDatabase):
 
         Args:
             api_key (str): Pinecone API key.
-            environment (str): Pinecone environment.
+            environment (str): Pinecone environment (deprecated, use cloud and region instead).
             index_name (str): Name of the Pinecone index to use.
             dimension (int): Dimension of the document embeddings. Defaults to 768.
             embedding_model (Optional[Any]): Custom embedding model. Defaults to None.
@@ -47,7 +48,8 @@ class PineconeMemory(BaseVectorDatabase):
             preprocess_function (Optional[Callable]): Custom preprocessing function. Defaults to None.
             postprocess_function (Optional[Callable]): Custom postprocessing function. Defaults to None.
             metric (str): Distance metric for Pinecone index. Defaults to 'cosine'.
-            pod_type (str): Pinecone pod type. Defaults to 'p1'.
+            cloud (str): Cloud provider for serverless index. Defaults to 'aws'.
+            region (str): Region for serverless index. Defaults to 'us-east-1'.
             namespace (str): Pinecone namespace. Defaults to ''.
             logger_config (Optional[Dict]): Configuration for the logger. Defaults to None.
         """
@@ -55,18 +57,21 @@ class PineconeMemory(BaseVectorDatabase):
         self._setup_logger(logger_config)
         logger.info("Initializing PineconeMemory")
 
-        pinecone.init(api_key=api_key, environment=environment)
+        self.pc = Pinecone(api_key=api_key)
 
-        if index_name not in pinecone.list_indexes():
+        if index_name not in self.pc.list_indexes().names():
             logger.info(f"Creating new Pinecone index: {index_name}")
-            pinecone.create_index(
-                index_name,
+            self.pc.create_index(
+                name=index_name,
                 dimension=dimension,
                 metric=metric,
-                pod_type=pod_type,
+                spec=ServerlessSpec(
+                    cloud=cloud,
+                    region=region
+                )
             )
 
-        self.index = pinecone.Index(index_name)
+        self.index = self.pc.Index(index_name)
         self.namespace = namespace
 
         self.embedding_model = embedding_model or SentenceTransformer(

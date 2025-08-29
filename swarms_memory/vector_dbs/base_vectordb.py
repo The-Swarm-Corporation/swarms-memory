@@ -147,3 +147,24 @@ class BaseVectorDatabase(ABC):
         """
         for d in data:
             logger.info(f"Retrieved Data: {d}")
+    
+    # Backward compatibility methods (deprecated)
+    def connect(self):
+        """
+        Legacy method for backward compatibility.
+        Most vector databases don't require explicit connection management.
+        """
+        logger.warning(
+            f"{self.__class__.__name__}.connect() is deprecated and may be removed. "
+            "Modern vector databases handle connections automatically."
+        )
+        
+    def close(self):
+        """
+        Legacy method for backward compatibility.
+        Most vector databases don't require explicit connection management.
+        """
+        logger.warning(
+            f"{self.__class__.__name__}.close() is deprecated and may be removed. "
+            "Modern vector databases handle connections automatically."
+        )

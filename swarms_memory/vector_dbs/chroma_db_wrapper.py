@@ -1,11 +1,12 @@
 import os
 import uuid
-from typing import Optional
+from typing import Optional, Dict, Any, Union, Callable, List
 
 import chromadb
 from dotenv import load_dotenv
 from loguru import logger
 from swarms_memory.vector_dbs.base_vectordb import BaseVectorDatabase
+from swarms_memory.embeddings.embedding_utils import setup_unified_embedding, get_embedding_function
 from swarms.utils.data_to_text import data_to_text
 
 # Load environment variables
@@ -46,6 +47,9 @@ class ChromaDB(BaseVectorDatabase):
         n_results: int = 1,
         docs_folder: str = None,
         verbose: bool = False,
+        embedding_model: Union[str, Any, Callable] = "text-embedding-3-small",
+        embedding_function: Optional[Callable[[str], List[float]]] = None,
+        dimension: Optional[int] = None,
         *args,
         **kwargs,
     ):
@@ -56,6 +60,20 @@ class ChromaDB(BaseVectorDatabase):
         self.n_results = n_results
         self.docs_folder = docs_folder
         self.verbose = verbose
+        
+        # Setup unified embedding system
+        embedding_kwargs = {k: v for k, v in kwargs.items() if k.startswith('embedding_')}
+        self.embedder, custom_embedding_function, self.dimension = setup_unified_embedding(
+            embedding_model=embedding_model,
+            embedding_function=embedding_function,
+            dimension=dimension,
+            **embedding_kwargs
+        )
+        
+        self.embedding_function = (
+            custom_embedding_function or 
+            get_embedding_function(self.embedder) if self.embedder else None
+        )
 
         # Create Chroma collection
         chroma_persist_dir = "chroma"
@@ -70,12 +88,15 @@ class ChromaDB(BaseVectorDatabase):
         # Create ChromaDB client
         self.client = chromadb.Client()
 
-        # Create Chroma collection
+        # Create Chroma collection with custom embedding function if available
+        collection_kwargs = {k: v for k, v in kwargs.items() if not k.startswith('embedding_')}
+        if self.embedding_function:
+            collection_kwargs["embedding_function"] = self.embedding_function
+            
         self.collection = chroma_client.get_or_create_collection(
             name=output_dir,
             metadata={"hnsw:space": metric},
-            *args,
-            **kwargs,
+            **collection_kwargs,
         )
         logger.info(
             "ChromaDB collection created:"
@@ -91,70 +112,105 @@ class ChromaDB(BaseVectorDatabase):
     def add(
         self,
         document: str,
+        metadata: Optional[Dict[str, Any]] = None,
         *args,
         **kwargs,
-    ):
+    ) -> str:
         """
         Add a document to the ChromaDB collection.
 
         Args:
             document (str): The document to be added.
-            condition (bool, optional): The condition to check before adding the document. Defaults to True.
+            metadata (Optional[Dict[str, Any]]): Additional metadata for the document.
 
         Returns:
             str: The ID of the added document.
         """
         try:
             doc_id = str(uuid.uuid4())
+            
+            add_kwargs = {k: v for k, v in kwargs.items()}
+            if metadata:
+                add_kwargs["metadatas"] = [metadata]
+                
             self.collection.add(
                 ids=[doc_id],
                 documents=[document],
-                *args,
-                **kwargs,
+                **add_kwargs,
             )
-            print("-----------------")
-            print("Document added successfully")
-            print("-----------------")
+            
+            if self.verbose:
+                logger.success(f"Document added successfully with ID: {doc_id}")
             return doc_id
         except Exception as e:
+            logger.error(f"Failed to add document: {str(e)}")
             raise Exception(f"Failed to add document: {str(e)}")
 
     def query(
         self,
         query_text: str,
+        top_k: Optional[int] = None,
+        return_metadata: bool = False,
         *args,
         **kwargs,
-    ) -> str:
+    ) -> Union[str, List[Dict[str, Any]]]:
         """
         Query documents from the ChromaDB collection.
 
         Args:
-            query (str): The query string.
-            n_docs (int, optional): The number of documents to retrieve. Defaults to 1.
+            query_text (str): The query string.
+            top_k (Optional[int]): The number of documents to retrieve. Defaults to n_results.
+            return_metadata (bool): Whether to return detailed metadata. Defaults to False.
 
         Returns:
-            dict: The retrieved documents.
+            Union[str, List[Dict[str, Any]]]: If return_metadata=False, returns concatenated text.
+                If return_metadata=True, returns list of dictionaries with detailed results.
         """
         try:
-            logger.info(f"Querying documents for: {query_text}")
-            docs = self.collection.query(
+            n_results = top_k or self.n_results
+            
+            if self.verbose:
+                logger.info(f"Querying documents for: {query_text}")
+                
+            query_kwargs = {k: v for k, v in kwargs.items()}
+            
+            results = self.collection.query(
                 query_texts=[query_text],
-                n_results=self.n_results,
-                *args,
-                **kwargs,
-            )["documents"]
+                n_results=n_results,
+                **query_kwargs,
+            )
 
-            # Convert into a string
-            out = ""
-            for doc in docs:
-                out += f"{doc}\n"
+            # Format results
+            formatted_results = []
+            documents = results.get("documents", [[]])[0]
+            ids = results.get("ids", [[]])[0]
+            distances = results.get("distances", [[]])[0]
+            metadatas = results.get("metadatas", [[]])[0]
+            
+            for i, doc in enumerate(documents):
+                result = {
+                    "id": ids[i] if i < len(ids) else None,
+                    "score": 1.0 - distances[i] if i < len(distances) else None,  # Convert distance to similarity
+                    "metadata": {"text": doc}
+                }
+                if i < len(metadatas) and metadatas[i]:
+                    result["metadata"].update(metadatas[i])
+                formatted_results.append(result)
 
-            # Display the retrieved document
-            logger.info(f"Query: {query_text}")
-            logger.info(f"Retrieved Document: {out}")
-            return out
+            if self.verbose:
+                logger.success(f"Query completed. Found {len(formatted_results)} results.")
+            
+            if return_metadata:
+                return formatted_results
+            else:
+                # Return concatenated text for backward compatibility
+                return "\n\n".join(
+                    result["metadata"].get("text", str(result["metadata"]))
+                    for result in formatted_results
+                )
 
         except Exception as e:
+            logger.error(f"Failed to query documents: {str(e)}")
             raise Exception(f"Failed to query documents: {str(e)}")
 
     def traverse_directory(
@@ -207,3 +263,45 @@ class ChromaDB(BaseVectorDatabase):
                 f"Failed to traverse directory: {str(error)}"
             )
             raise error
+    
+    def delete(self, doc_id: str) -> bool:
+        """
+        Delete a document from the ChromaDB collection.
+
+        Args:
+            doc_id (str): The document ID to delete.
+
+        Returns:
+            bool: True if deletion was successful, False otherwise.
+        """
+        try:
+            if self.verbose:
+                logger.info(f"Deleting document with ID: {doc_id}")
+            self.collection.delete(ids=[doc_id])
+            if self.verbose:
+                logger.success(f"Document deleted successfully: {doc_id}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to delete document {doc_id}: {str(e)}")
+            return False
+    
+    def clear(self) -> bool:
+        """
+        Clear all documents from the collection.
+
+        Returns:
+            bool: True if clearing was successful, False otherwise.
+        """
+        try:
+            if self.verbose:
+                logger.info("Clearing all documents from collection")
+            # Get all document IDs and delete them
+            all_docs = self.collection.get()
+            if all_docs.get('ids'):
+                self.collection.delete(ids=all_docs['ids'])
+            if self.verbose:
+                logger.success("All documents cleared successfully")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to clear documents: {str(e)}")
+            return False

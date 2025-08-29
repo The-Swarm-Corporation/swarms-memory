@@ -18,7 +18,9 @@ classifiers = [
     "Intended Audience :: Developers",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3.9"
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12"
 ]
 
 [tool.poetry.dependencies]
@@ -27,13 +29,16 @@ torch = "*"
 chromadb = "*"
 loguru = "*"
 sentence-transformers = "*"
-pinecone = "*"
+pinecone = "^3.0.0"
 faiss-cpu = "*"
 pydantic = "*"
 sqlalchemy = "*"
 singlestoredb = "*"
-qdrant-client = "*"
+qdrant-client = "^1.7.0"
 fastembed = "*"
+litellm = "^1.0.0"
+python-dotenv = "^1.0.0"
+swarms = {version = "*", optional = true}
 
 
 
@@ -46,6 +51,16 @@ types-pytz = "^2024.1.0.20240417"
 black = "^24.4.2"
 types-chardet = "^5.0.4.6"
 mypy-protobuf = "^3.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.0.0"
+pytest-asyncio = "^0.21.0"
+pytest-cov = "^4.0.0"
+
+[tool.poetry.extras]
+agents = ["swarms"]
+grpc = ["pinecone[grpc]"]
+asyncio = ["pinecone[asyncio]"]
 
 
 [tool.autopep8]

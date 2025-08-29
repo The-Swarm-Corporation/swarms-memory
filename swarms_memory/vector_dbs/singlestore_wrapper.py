@@ -1,12 +1,12 @@
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Union
 import os
 import uuid
 import json
 import numpy as np
 from loguru import logger
 import singlestoredb as s2
-from sentence_transformers import SentenceTransformer
 from swarms_memory.vector_dbs.base_vectordb import BaseVectorDatabase
+from swarms_memory.embeddings.embedding_utils import setup_unified_embedding, get_embedding_function
 
 
 class SingleStoreDB(BaseVectorDatabase):
@@ -29,12 +29,13 @@ class SingleStoreDB(BaseVectorDatabase):
         port: int = 3306,
         ssl: bool = True,
         ssl_verify: bool = True,
-        embedding_model: Optional[Any] = None,
+        embedding_model: Union[str, Any, Callable] = "text-embedding-3-small",
         embedding_function: Optional[Callable[[str], List[float]]] = None,
         preprocess_function: Optional[Callable[[str], str]] = None,
         postprocess_function: Optional[Callable[[List[Dict[str, Any]]], List[Dict[str, Any]]]] = None,
         namespace: str = "",
         logger_config: Optional[Dict[str, Any]] = None,
+        **embedding_kwargs
     ):
         """
         Initialize the SingleStoreDB wrapper.
@@ -49,8 +50,11 @@ class SingleStoreDB(BaseVectorDatabase):
             port (int): SingleStore port number. Defaults to 3306
             ssl (bool): Whether to use SSL for connection. Defaults to True
             ssl_verify (bool): Whether to verify SSL certificate. Defaults to True
-            embedding_model (Optional[Any]): Model for generating embeddings. Defaults to None
-            embedding_function (Optional[Callable]): Custom function for generating embeddings. Defaults to None
+            embedding_model (Union[str, Any, Callable]): Embedding model specification:
+                - str: LiteLLM model name (e.g., "text-embedding-3-small") or SentenceTransformer model
+                - LiteLLMEmbeddings: Pre-configured instance
+                - Callable: Custom embedding function
+            embedding_function (Optional[Callable]): Legacy embedding function (for backward compatibility)
             preprocess_function (Optional[Callable]): Custom function for preprocessing documents. Defaults to None
             postprocess_function (Optional[Callable]): Custom function for postprocessing query results. Defaults to None
             namespace (str): Namespace for document organization. Defaults to ""
@@ -73,9 +77,22 @@ class SingleStoreDB(BaseVectorDatabase):
         self.dimension = dimension
         self.namespace = namespace
 
-        # Set up embedding model and functions
-        self.embedding_model = embedding_model or SentenceTransformer("all-MiniLM-L6-v2")
-        self.embedding_function = embedding_function or self._default_embedding_function
+        # Setup unified embedding system
+        self.embedder, custom_embedding_function, detected_dimension = setup_unified_embedding(
+            embedding_model=embedding_model,
+            embedding_function=embedding_function,
+            dimension=dimension,
+            **embedding_kwargs
+        )
+        
+        # Use detected dimension if available, otherwise use provided dimension
+        self.dimension = detected_dimension or dimension
+        
+        self.embedding_function = (
+            custom_embedding_function or 
+            get_embedding_function(self.embedder) if self.embedder else
+            self._default_embedding_function
+        )
         self.preprocess_function = preprocess_function or self._default_preprocess_function
         self.postprocess_function = postprocess_function or self._default_postprocess_function
 
@@ -94,8 +111,11 @@ class SingleStoreDB(BaseVectorDatabase):
         logger.configure(**(config or default_config))
 
     def _default_embedding_function(self, text: str) -> np.ndarray:
-        """Default embedding function using the SentenceTransformer model."""
-        return self.embedding_model.encode(text)
+        """Default embedding function - should not be called if embedding setup is correct."""
+        raise NotImplementedError(
+            "Default embedding function called - this indicates an issue with embedding setup. "
+            "Please check your embedding_model configuration."
+        )
 
     def _default_preprocess_function(self, text: str) -> str:
         """Default preprocessing function."""
@@ -160,7 +180,13 @@ class SingleStoreDB(BaseVectorDatabase):
         
         # Process document and generate embedding
         processed_doc = self.preprocess_function(document)
-        embedding = self.embedding_function(processed_doc)
+        embedding_result = self.embedding_function(processed_doc)
+        
+        # Convert to numpy array if needed
+        if isinstance(embedding_result, list):
+            embedding = np.array(embedding_result, dtype=np.float32)
+        else:
+            embedding = embedding_result
         
         # Prepare metadata
         doc_id = str(uuid.uuid4())
@@ -187,7 +213,8 @@ class SingleStoreDB(BaseVectorDatabase):
         query: str,
         top_k: int = 5,
         metadata_filter: Optional[Dict[str, Any]] = None,
-    ) -> List[Dict[str, Any]]:
+        return_metadata: bool = False,
+    ) -> Union[str, List[Dict[str, Any]]]:
         """
         Query the vector database for similar documents.
 
@@ -195,15 +222,23 @@ class SingleStoreDB(BaseVectorDatabase):
             query (str): Query text
             top_k (int): Number of results to return. Defaults to 5
             metadata_filter (Optional[Dict[str, Any]]): Filter results by metadata
+            return_metadata (bool): Whether to return detailed metadata. Defaults to False.
 
         Returns:
-            List[Dict[str, Any]]: List of similar documents with their metadata and similarity scores
+            Union[str, List[Dict[str, Any]]]: If return_metadata=False, returns concatenated text.
+                If return_metadata=True, returns list of dictionaries with detailed results.
         """
         logger.info(f"Querying with: {query}")
 
         # Process query and generate embedding
         processed_query = self.preprocess_function(query)
-        query_embedding = self.embedding_function(processed_query)
+        embedding_result = self.embedding_function(processed_query)
+        
+        # Convert to numpy array if needed
+        if isinstance(embedding_result, list):
+            query_embedding = np.array(embedding_result, dtype=np.float32)
+        else:
+            query_embedding = embedding_result
 
         # Construct metadata filter if provided
         filter_clause = ""
@@ -233,15 +268,24 @@ class SingleStoreDB(BaseVectorDatabase):
         formatted_results = []
         for doc_id, document, metadata_json, similarity in results:
             metadata = json.loads(metadata_json) if metadata_json else {}
+            metadata["text"] = document  # Add text to metadata for consistency
             formatted_results.append({
                 "id": doc_id,
-                "document": self.postprocess_function(document) if document else None,
+                "score": float(similarity),
                 "metadata": metadata,
-                "similarity": float(similarity)
             })
 
-        logger.success(f"Query completed. Found {len(formatted_results)} results.")
-        return formatted_results
+        processed_results = self.postprocess_function(formatted_results)
+        logger.success(f"Query completed. Found {len(processed_results)} results.")
+        
+        if return_metadata:
+            return processed_results
+        else:
+            # Return concatenated text for backward compatibility
+            return "\n\n".join(
+                result["metadata"].get("text", str(result["metadata"]))
+                for result in processed_results
+            )
 
     def delete(self, doc_id: str) -> bool:
         """
@@ -269,3 +313,27 @@ class SingleStoreDB(BaseVectorDatabase):
             logger.warning(f"Document {doc_id} not found")
         
         return deleted
+    
+    def clear(self) -> bool:
+        """
+        Clear all documents from the namespace.
+
+        Returns:
+            bool: True if clearing was successful, False otherwise.
+        """
+        try:
+            logger.info(f"Clearing all documents from namespace: {self.namespace}")
+            
+            with s2.connect(self.connection_string) as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute(
+                        f"DELETE FROM {self.table_name} WHERE namespace = %s",
+                        (self.namespace,)
+                    )
+                    deleted_count = cursor.rowcount
+            
+            logger.success(f"Cleared {deleted_count} documents successfully")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to clear documents: {str(e)}")
+            return False

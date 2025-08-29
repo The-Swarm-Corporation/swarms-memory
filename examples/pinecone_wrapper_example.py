@@ -8,8 +8,8 @@ from swarms_memory import PineconeMemory
 API_KEY = os.getenv(
     "PINECONE_API_KEY"
 )  # Make sure to set your Pinecone API key in the environment
-ENVIRONMENT = "us-west1-gcp"  # Example environment
-INDEX_NAME = "my-pinecone-index"  # Name of the Pinecone index to use
+ENVIRONMENT = "us-east-1-aws"  # Example environment
+INDEX_NAME = "swarms"  # Name of the Pinecone index to use
 
 # Create an instance of the PineconeMemory class
 pinecone_memory = PineconeMemory(
