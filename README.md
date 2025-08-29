@@ -415,14 +415,15 @@ For comprehensive examples including all deployment types, see [`examples/qdrant
 
 #### Supported Embedding Models
 
-Through LiteLLM integration, QdrantDB supports:
-- **OpenAI**: `"text-embedding-3-small"`, `"text-embedding-3-large"`
-- **Azure OpenAI**: `"azure/your-deployment-name"`
-- **Cohere**: `"cohere/embed-english-v3.0"`, `"cohere/embed-multilingual-v3.0"`
-- **Voyage AI**: `"voyage/voyage-3-large"`, `"voyage/voyage-code-2"`
-- **AWS Bedrock**: `"bedrock/amazon.titan-embed-text-v1"`
-- **Custom Functions**: Any callable that takes text and returns a vector
-- **Qdrant Built-in**: `"qdrant:sentence-transformers/all-MiniLM-L6-v2"`
+| **Provider**         | **Model(s) / Integration**                                                                                 |
+|----------------------|-----------------------------------------------------------------------------------------------------------|
+| **OpenAI**           | `"text-embedding-3-small"`, `"text-embedding-3-large"`                                                    |
+| **Azure OpenAI**     | `"azure/your-deployment-name"`                                                                            |
+| **Cohere**           | `"cohere/embed-english-v3.0"`, `"cohere/embed-multilingual-v3.0"`                                         |
+| **Voyage AI**        | `"voyage/voyage-3-large"`, `"voyage/voyage-code-2"`                                                       |
+| **AWS Bedrock**      | `"bedrock/amazon.titan-embed-text-v1"`                                                                    |
+| **Custom Functions** | Any callable that takes text and returns a vector                                                         |
+| **Qdrant Built-in**  | `"qdrant:sentence-transformers/all-MiniLM-L6-v2"`                                                        |
 
 For other vector databases (Pinecone, FAISS, SingleStore), you can use LiteLLM embeddings through their `embedding_function` parameter:
 
