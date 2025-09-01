@@ -1,6 +1,7 @@
 import os
 from typing import List, Optional, Dict, Any, Union
 from loguru import logger
+from swarms_memory.exceptions import EmbeddingError, ValidationError, handle_error
 
 try:
     from litellm import embedding
@@ -135,8 +136,15 @@ class LiteLLMEmbeddings:
         Raises:
             Exception: If the embedding generation fails
         """
-        if not texts:
-            return []
+        # Input validation
+        if not texts or not isinstance(texts, list):
+            raise ValidationError("Texts must be a non-empty list")
+        
+        if not all(isinstance(text, str) for text in texts):
+            raise ValidationError("All texts must be strings")
+            
+        if any(len(text.strip()) == 0 for text in texts):
+            raise ValidationError("All texts must contain non-whitespace content")
         
         try:
             params = self._prepare_params()
@@ -150,9 +158,10 @@ class LiteLLMEmbeddings:
             logger.debug(f"Generated {len(embeddings)} embeddings for documents")
             return embeddings
             
-        except Exception as e:
-            logger.error(f"Failed to generate embeddings: {str(e)}")
+        except ValidationError:
             raise
+        except Exception as e:
+            handle_error(e, "document embedding generation", "LiteLLMEmbeddings", EmbeddingError)
     
     def embed_query(self, text: str) -> List[float]:
         """
@@ -170,6 +179,13 @@ class LiteLLMEmbeddings:
         Raises:
             Exception: If the embedding generation fails
         """
+        # Input validation
+        if not text or not isinstance(text, str):
+            raise ValidationError("Text must be a non-empty string")
+        
+        if len(text.strip()) == 0:
+            raise ValidationError("Text cannot be just whitespace")
+            
         try:
             params = self._prepare_params()
             params["input"] = [text]
@@ -187,9 +203,10 @@ class LiteLLMEmbeddings:
             logger.debug(f"Generated query embedding with dimension {len(query_embedding)}")
             return query_embedding
             
-        except Exception as e:
-            logger.error(f"Failed to generate query embedding: {str(e)}")
+        except ValidationError:
             raise
+        except Exception as e:
+            handle_error(e, "query embedding generation", "LiteLLMEmbeddings", EmbeddingError)
     
     def _supports_input_type(self) -> bool:
         """

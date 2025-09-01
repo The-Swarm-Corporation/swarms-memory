@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from loguru import logger
 from swarms_memory.vector_dbs.base_vectordb import BaseVectorDatabase
 from swarms_memory.embeddings.embedding_utils import setup_unified_embedding, get_embedding_function
+from swarms_memory.exceptions import VectorDatabaseError, ConfigurationError, ValidationError, handle_error
 from swarms.utils.data_to_text import data_to_text
 
 # Load environment variables
@@ -151,6 +152,10 @@ class ChromaDB(BaseVectorDatabase):
         Returns:
             str: The ID of the added document.
         """
+        # Input validation
+        if not document or not isinstance(document, str):
+            raise ValidationError("Document must be a non-empty string")
+        
         try:
             doc_id = str(uuid.uuid4())
             
@@ -167,9 +172,10 @@ class ChromaDB(BaseVectorDatabase):
             if self.verbose:
                 logger.success(f"Document added successfully with ID: {doc_id}")
             return doc_id
+        except ValidationError:
+            raise
         except Exception as e:
-            logger.error(f"Failed to add document: {str(e)}")
-            raise Exception(f"Failed to add document: {str(e)}")
+            handle_error(e, "document addition", "ChromaDB", VectorDatabaseError)
 
     def query(
         self,
@@ -191,6 +197,13 @@ class ChromaDB(BaseVectorDatabase):
             Union[str, List[Dict[str, Any]]]: If return_metadata=False, returns concatenated text.
                 If return_metadata=True, returns list of dictionaries with detailed results.
         """
+        # Input validation
+        if not query_text or not isinstance(query_text, str):
+            raise ValidationError("Query text must be a non-empty string")
+        
+        if top_k is not None and (not isinstance(top_k, int) or top_k <= 0):
+            raise ValidationError("top_k must be a positive integer")
+            
         try:
             n_results = top_k or self.n_results
             
@@ -234,9 +247,10 @@ class ChromaDB(BaseVectorDatabase):
                     for result in formatted_results
                 )
 
+        except ValidationError:
+            raise
         except Exception as e:
-            logger.error(f"Failed to query documents: {str(e)}")
-            raise Exception(f"Failed to query documents: {str(e)}")
+            handle_error(e, "document query", "ChromaDB", VectorDatabaseError)
 
     def traverse_directory(
         self, docs_folder: str = None, *args, **kwargs
