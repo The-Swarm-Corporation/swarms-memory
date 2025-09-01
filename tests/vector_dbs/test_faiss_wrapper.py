@@ -175,7 +175,7 @@ def test_faiss_litellm_integration():
     # Check for OpenAI API key
     openai_key = os.getenv("OPENAI_API_KEY")
     if not openai_key:
-        print("⚠️ OPENAI_API_KEY not found - skipping LiteLLM integration test")
+        print("⚠ OPENAI_API_KEY not found - skipping LiteLLM integration test")
         print("  Set OPENAI_API_KEY environment variable to test LiteLLM integration")
         return
     
@@ -210,7 +210,7 @@ def test_faiss_litellm_integration():
             print(f"  Best match score: {results[0]['score']:.4f}")
         
     except Exception as e:
-        print(f"⚠️ LiteLLM integration test failed: {str(e)}")
+        print(f"⚠ LiteLLM integration test failed: {str(e)}")
         print("  This might be due to API limits or network issues")
 
 def test_faiss_index_types():
@@ -235,7 +235,7 @@ def test_faiss_index_types():
             print(f"✓ {index_type} index working - found {len(results)} results")
             
         except Exception as e:
-            print(f"⚠️ {index_type} index failed: {str(e)}")
+            print(f"⚠ {index_type} index failed: {str(e)}")
 
 def test_faiss_error_handling():
     """Test FAISS error handling scenarios."""

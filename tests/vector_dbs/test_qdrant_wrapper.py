@@ -82,7 +82,7 @@ def test_qdrant_basic_operations():
         return qm
         
     except Exception as e:
-        print(f"⚠️ Qdrant basic operations failed: {str(e)}")
+        print(f"⚠ Qdrant basic operations failed: {str(e)}")
         print("  Make sure Qdrant is running locally or set QDRANT_URL/QDRANT_API_KEY for cloud")
         return None
 
@@ -96,7 +96,7 @@ def test_qdrant_litellm_integration():
     qdrant_api_key = os.getenv("QDRANT_API_KEY")
     
     if not openai_key:
-        print("⚠️ OPENAI_API_KEY not found - skipping LiteLLM integration test")
+        print("⚠ OPENAI_API_KEY not found - skipping LiteLLM integration test")
         print("  Set OPENAI_API_KEY to test LiteLLM integration")
         return
     
@@ -134,7 +134,7 @@ def test_qdrant_litellm_integration():
             print(f"  Best match score: {results[0]['score']:.4f}")
         
     except Exception as e:
-        print(f"⚠️ LiteLLM integration test failed: {str(e)}")
+        print(f"⚠ LiteLLM integration test failed: {str(e)}")
         print("  This might be due to API limits, network issues, or Qdrant connection")
 
 def test_qdrant_filtering():
@@ -184,7 +184,7 @@ def test_qdrant_filtering():
         print(f"✓ Found {len(ai_results)} AI-related documents")
         
     except Exception as e:
-        print(f"⚠️ Filtering test failed: {str(e)}")
+        print(f"⚠ Filtering test failed: {str(e)}")
 
 def test_qdrant_cloud_vs_local():
     """Test Qdrant cloud vs local connection modes."""
@@ -206,7 +206,7 @@ def test_qdrant_cloud_vs_local():
         print("✓ Local document addition successful")
         
     except Exception as e:
-        print(f"⚠️ Local Qdrant connection failed: {str(e)}")
+        print(f"⚠ Local Qdrant connection failed: {str(e)}")
         print("  Make sure Qdrant is running locally on port 6333")
     
     # Test cloud connection (if credentials provided)
@@ -229,9 +229,9 @@ def test_qdrant_cloud_vs_local():
             print("✓ Cloud document addition successful")
             
         except Exception as e:
-            print(f"⚠️ Cloud Qdrant connection failed: {str(e)}")
+            print(f"⚠ Cloud Qdrant connection failed: {str(e)}")
     else:
-        print("⚠️ QDRANT_URL/QDRANT_API_KEY not found - skipping cloud test")
+        print("⚠ QDRANT_URL/QDRANT_API_KEY not found - skipping cloud test")
         print("  Set these variables to test Qdrant cloud connection")
 
 def test_qdrant_error_handling():
@@ -270,7 +270,7 @@ def test_qdrant_error_handling():
         print(f"✓ Clear operation: {count_before} -> {count_after} documents")
         
     except Exception as e:
-        print(f"⚠️ Error handling test failed: {str(e)}")
+        print(f"⚠ Error handling test failed: {str(e)}")
 
 def test_qdrant_batch_operations():
     """Test Qdrant batch operations."""
@@ -307,7 +307,7 @@ def test_qdrant_batch_operations():
         print(f"✓ Total documents in collection: {count}")
         
     except Exception as e:
-        print(f"⚠️ Batch operations test failed: {str(e)}")
+        print(f"⚠ Batch operations test failed: {str(e)}")
 
 def main():
     """Run all Qdrant tests."""

@@ -222,7 +222,7 @@ def main():
     )
     
     # Add initial knowledge base
-    print("📚 Adding knowledge to agent's memory...\n")
+    print("Adding knowledge to agent's memory...\n")
     knowledge_docs = [
         "Pinecone is a managed vector database designed for production-ready AI applications. It offers serverless and pod-based deployments.",
         "Vector databases enable semantic search by storing and querying high-dimensional vectors that represent the meaning of data.",
@@ -255,7 +255,7 @@ def main():
         print("-" * 80 + "\n")
     
     # Demonstrate learning from conversation
-    print("📝 Teaching the agent new information...\n")
+    print("Teaching the agent new information...\n")
     new_info = "Pinecone recently introduced serverless indexes that automatically scale and only charge for usage, making it cost-effective for variable workloads."
     agent.process_query(
         f"Please remember this information: {new_info}",
@@ -269,9 +269,9 @@ def main():
     
     # Show memory stats
     stats = agent.get_memory_stats()
-    print(f"📊 Memory Stats: {stats}\n")
+    print(f"Memory Stats: {stats}\n")
     
-    print("✅ Demo completed successfully!")
+    print("Demo completed successfully!")
 
 
 if __name__ == "__main__":

@@ -135,7 +135,7 @@ def test_chromadb_collection_management():
         print(f"✓ Documents after clear: {count_after_clear}")
         
     except Exception as e:
-        print(f"⚠️ Collection management test failed: {str(e)}")
+        print(f"⚠ Collection management test failed: {str(e)}")
 
 def test_chromadb_directory_traversal():
     """Test ChromaDB directory traversal functionality."""
@@ -173,7 +173,7 @@ def test_chromadb_directory_traversal():
             print(f"✓ Found {len(results)} results from loaded documents")
             
         except Exception as e:
-            print(f"⚠️ Directory traversal failed: {str(e)}")
+            print(f"⚠ Directory traversal failed: {str(e)}")
 
 def test_chromadb_batch_operations():
     """Test ChromaDB batch operations."""
@@ -201,7 +201,7 @@ def test_chromadb_batch_operations():
         print(f"✓ Total documents in collection: {count}")
         
     except Exception as e:
-        print(f"⚠️ Batch operations test failed: {str(e)}")
+        print(f"⚠ Batch operations test failed: {str(e)}")
 
 def test_chromadb_error_handling():
     """Test ChromaDB error handling scenarios."""
@@ -230,7 +230,7 @@ def test_chromadb_error_handling():
         print(f"✓ Clear operation: {count_before} -> {count_after} documents")
         
     except Exception as e:
-        print(f"⚠️ Error handling test failed: {str(e)}")
+        print(f"⚠ Error handling test failed: {str(e)}")
 
 def test_chromadb_different_metrics():
     """Test ChromaDB with different distance metrics."""
@@ -252,7 +252,7 @@ def test_chromadb_different_metrics():
             print(f"✓ {metric.upper()} metric working - found {len(results)} results")
             
         except Exception as e:
-            print(f"⚠️ {metric.upper()} metric failed: {str(e)}")
+            print(f"⚠ {metric.upper()} metric failed: {str(e)}")
 
 def main():
     """Run all ChromaDB tests."""

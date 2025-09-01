@@ -18,7 +18,7 @@ def test_pinecone_basic_operations():
     # Check for Pinecone API key
     pinecone_key = os.getenv("PINECONE_API_KEY")
     if not pinecone_key:
-        print("⚠️ PINECONE_API_KEY not found - skipping Pinecone tests")
+        print("⚠ PINECONE_API_KEY not found - skipping Pinecone tests")
         print("  Set PINECONE_API_KEY environment variable to test Pinecone integration")
         return
     
@@ -93,7 +93,7 @@ def test_pinecone_litellm_integration():
     openai_key = os.getenv("OPENAI_API_KEY")
     
     if not pinecone_key or not openai_key:
-        print("⚠️ API keys not found - skipping LiteLLM integration test")
+        print("⚠ API keys not found - skipping LiteLLM integration test")
         print("  Set PINECONE_API_KEY and OPENAI_API_KEY to test LiteLLM integration")
         return
     
@@ -130,7 +130,7 @@ def test_pinecone_litellm_integration():
             print(f"  Best match score: {results[0]['score']:.4f}")
         
     except Exception as e:
-        print(f"⚠️ LiteLLM integration test failed: {str(e)}")
+        print(f"⚠ LiteLLM integration test failed: {str(e)}")
 
 def test_pinecone_namespaces():
     """Test Pinecone namespace functionality."""
@@ -138,7 +138,7 @@ def test_pinecone_namespaces():
     
     pinecone_key = os.getenv("PINECONE_API_KEY")
     if not pinecone_key:
-        print("⚠️ PINECONE_API_KEY not found - skipping namespace test")
+        print("⚠ PINECONE_API_KEY not found - skipping namespace test")
         return
     
     try:
@@ -173,7 +173,7 @@ def test_pinecone_namespaces():
         print(f"✓ Testing namespace: {len(test_results)} results")
         
     except Exception as e:
-        print(f"⚠️ Namespace test failed: {str(e)}")
+        print(f"⚠ Namespace test failed: {str(e)}")
 
 def test_pinecone_error_handling():
     """Test Pinecone error handling scenarios."""
@@ -181,7 +181,7 @@ def test_pinecone_error_handling():
     
     pinecone_key = os.getenv("PINECONE_API_KEY")
     if not pinecone_key:
-        print("⚠️ PINECONE_API_KEY not found - skipping error handling test")
+        print("⚠ PINECONE_API_KEY not found - skipping error handling test")
         return
     
     try:
@@ -208,12 +208,12 @@ def test_pinecone_error_handling():
                 dimension=1536
             )
             invalid_pm.add("Test document")
-            print("⚠️ Dimension mismatch not caught")
+            print("⚠ Dimension mismatch not caught")
         except Exception:
             print("✓ Dimension mismatch properly handled")
         
     except Exception as e:
-        print(f"⚠️ Error handling test failed: {str(e)}")
+        print(f"⚠ Error handling test failed: {str(e)}")
 
 def test_pinecone_batch_operations():
     """Test Pinecone batch operations."""
@@ -221,7 +221,7 @@ def test_pinecone_batch_operations():
     
     pinecone_key = os.getenv("PINECONE_API_KEY")
     if not pinecone_key:
-        print("⚠️ PINECONE_API_KEY not found - skipping batch test")
+        print("⚠ PINECONE_API_KEY not found - skipping batch test")
         return
     
     try:
@@ -250,7 +250,7 @@ def test_pinecone_batch_operations():
         # print(f"✓ Clear operation: {'success' if success else 'failed'}")
         
     except Exception as e:
-        print(f"⚠️ Batch operations test failed: {str(e)}")
+        print(f"⚠ Batch operations test failed: {str(e)}")
 
 def main():
     """Run all Pinecone tests."""

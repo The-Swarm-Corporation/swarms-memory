@@ -230,7 +230,7 @@ def main():
     ]
     
     # Add knowledge to the agent's memory
-    print("📚 Adding knowledge to agent's memory...")
+    print("Adding knowledge to agent's memory...")
     agent.add_knowledge(
         knowledge_docs,
         metadata_list=[{"source": "documentation", "topic": topic} 
@@ -257,12 +257,12 @@ def main():
         print("-" * 80)
     
     # Show memory statistics
-    print("\n📊 Memory Statistics:")
+    print("\nMemory Statistics:")
     stats = agent.get_memory_stats()
     for key, value in stats.items():
         print(f"  {key}: {value}")
     
-    print(f"\n✅ Demo completed! Index saved to: {agent.index_file}")
+    print(f"\nDemo completed! Index saved to: {agent.index_file}")
     
     # Optional: Rebuild index for better performance
     print("\n🔄 Rebuilding index for optimal performance...")

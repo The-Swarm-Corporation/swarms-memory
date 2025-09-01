@@ -27,7 +27,7 @@ def main():
     )
     
     print("🚀 Modern Pinecone Memory Example")
-    print(f"📊 Health Check: {pinecone_memory.health_check()}")
+    print(f"Health Check: {pinecone_memory.health_check()}")
     
     # Sample documents to add
     documents = [
@@ -50,12 +50,12 @@ def main():
     ]
     
     # Add documents
-    print("\n📚 Adding documents...")
+    print("\nAdding documents...")
     doc_ids = []
     for doc in documents:
         doc_id = pinecone_memory.add(doc["text"], metadata=doc["metadata"])
         doc_ids.append(doc_id)
-        print(f"✅ Added: {doc['text'][:50]}... (ID: {doc_id})")
+        print(f"Added: {doc['text'][:50]}... (ID: {doc_id})")
     
     # Query examples
     queries = [
@@ -65,7 +65,7 @@ def main():
         "Tell me about RAG systems"
     ]
     
-    print("\n🔍 Querying documents...")
+    print("\nQuerying documents...")
     for query in queries:
         print(f"\n❓ Query: {query}")
         results = pinecone_memory.query(query_text=query, top_k=2)
@@ -88,7 +88,7 @@ def main():
     
     # Count documents
     doc_count = pinecone_memory.count()
-    print(f"📊 Total documents: {doc_count}")
+    print(f"Total documents: {doc_count}")
     
     # Delete a document
     if len(doc_ids) > 2:
@@ -96,12 +96,12 @@ def main():
         success = pinecone_memory.delete(delete_id)
         if success:
             print(f"🗑️  Deleted document: {delete_id}")
-            print(f"📊 Documents after deletion: {pinecone_memory.count()}")
+            print(f"Documents after deletion: {pinecone_memory.count()}")
     
     # Health check after operations
     print(f"\n🏥 Final Health Check: {pinecone_memory.health_check()}")
     
-    print("\n✅ Modern Pinecone example completed!")
+    print("\nModern Pinecone example completed!")
 
 if __name__ == "__main__":
     main()

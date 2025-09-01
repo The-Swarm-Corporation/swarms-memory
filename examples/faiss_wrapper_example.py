@@ -25,7 +25,7 @@ def main():
         api_key_embedding=os.getenv("OPENAI_API_KEY")
     )
     
-    print(f"📊 Health Check: {faiss_db.health_check()}")
+    print(f"Health Check: {faiss_db.health_check()}")
     
     # Sample documents with metadata
     documents = [
@@ -52,12 +52,12 @@ def main():
     ]
     
     # Add documents
-    print("\n📚 Adding documents...")
+    print("\nAdding documents...")
     doc_ids = []
     for doc in documents:
         doc_id = faiss_db.add(doc["text"], metadata=doc["metadata"])
         doc_ids.append(doc_id)
-        print(f"✅ Added: {doc['text'][:50]}... (ID: {doc_id})")
+        print(f"Added: {doc['text'][:50]}... (ID: {doc_id})")
     
     # Query examples
     queries = [
@@ -68,7 +68,7 @@ def main():
         "vector database search"
     ]
     
-    print("\n🔍 Querying documents...")
+    print("\nQuerying documents...")
     for query in queries:
         print(f"\n❓ Query: {query}")
         results = faiss_db.query(query_text=query, top_k=2)
@@ -104,7 +104,7 @@ def main():
     
     # Count documents
     doc_count = faiss_db.count()
-    print(f"📊 Total documents: {doc_count}")
+    print(f"Total documents: {doc_count}")
     
     # Delete a document
     if len(doc_ids) > 2:
@@ -112,7 +112,7 @@ def main():
         success = faiss_db.delete(delete_id)
         if success:
             print(f"🗑️  Deleted document: {delete_id}")
-            print(f"📊 Documents after deletion: {faiss_db.count()}")
+            print(f"Documents after deletion: {faiss_db.count()}")
     
     # Rebuild index for better performance
     print("\n🔄 Rebuilding index...")
@@ -124,7 +124,7 @@ def main():
     for key, value in final_health.items():
         print(f"   {key}: {value}")
     
-    print(f"\n✅ Example completed! Index saved to: {faiss_db.index_file}")
+    print(f"\nExample completed! Index saved to: {faiss_db.index_file}")
 
 def custom_embedding_example():
     """
