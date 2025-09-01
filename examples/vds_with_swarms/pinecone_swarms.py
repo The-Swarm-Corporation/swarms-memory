@@ -55,27 +55,17 @@ class PineconeSwarmAgent:
         self.index_name = index_name
         self.embedding_model_name = embedding_model
         
-        # Initialize embedding model
-        embedder = LiteLLMEmbeddings(
-            model=embedding_model,
-            api_key=openai_api_key or os.getenv("OPENAI_API_KEY")
-        )
-        
-        # Create custom embedding function that matches expected interface
-        def custom_embedding_function(text: str) -> List[float]:
-            return embedder.embed_query(text)
-        
-        # Initialize Pinecone vector database
+        # Initialize Pinecone vector database with modern API
         self.vector_db = PineconeMemory(
             api_key=pinecone_api_key or os.getenv("PINECONE_API_KEY"),
-            environment="us-east-1",  # Required parameter (deprecated but still needed)
             index_name=index_name,
+            embedding_model=embedding_model,
             dimension=1536,  # Dimension for text-embedding-3-small
-            embedding_function=custom_embedding_function,
             metric="cosine",
             cloud=cloud,
             region=region,
-            namespace="agent_memory"
+            namespace="agent_memory",
+            api_key_embedding=openai_api_key or os.getenv("OPENAI_API_KEY")
         )
         
         # Initialize Swarms agent
@@ -136,7 +126,7 @@ class PineconeSwarmAgent:
             Formatted context string
         """
         results = self.vector_db.query(
-            query,
+            query_text=query,
             top_k=top_k
         )
         

@@ -13,6 +13,26 @@ from swarms.utils.data_to_text import data_to_text
 load_dotenv()
 
 
+class EmbeddingFunctionWrapper:
+    """Wrapper class to provide ChromaDB-compatible embedding function with name attribute."""
+    
+    def __init__(self, embedding_function: Callable, name: str = "custom_embedding"):
+        self.embedding_function = embedding_function
+        self._name = name
+    
+    def __call__(self, input: Union[str, List[str]]) -> Union[List[float], List[List[float]]]:
+        """Call the underlying embedding function with ChromaDB-compatible signature."""
+        if isinstance(input, str):
+            return self.embedding_function(input)
+        else:
+            # Handle batch processing
+            return [self.embedding_function(text) for text in input]
+    
+    def name(self) -> str:
+        """Return the name of the embedding function."""
+        return self._name
+
+
 # Results storage using local ChromaDB
 class ChromaDB(BaseVectorDatabase):
     """
@@ -91,7 +111,12 @@ class ChromaDB(BaseVectorDatabase):
         # Create Chroma collection with custom embedding function if available
         collection_kwargs = {k: v for k, v in kwargs.items() if not k.startswith('embedding_')}
         if self.embedding_function:
-            collection_kwargs["embedding_function"] = self.embedding_function
+            # Wrap the embedding function to provide the required name() method
+            wrapped_embedding_function = EmbeddingFunctionWrapper(
+                self.embedding_function, 
+                name=f"{embedding_model}_embedding"
+            )
+            collection_kwargs["embedding_function"] = wrapped_embedding_function
             
         self.collection = chroma_client.get_or_create_collection(
             name=output_dir,
