@@ -6,6 +6,7 @@ from swarms_memory.vector_dbs import (
     SingleStoreDB,
     QdrantDB,
     MilvusDB,
+    WeaviateDB,
 )
 from swarms_memory.utils import (
     ActionSubtaskEntry,
@@ -46,6 +47,7 @@ __all__ = [
     "SingleStoreDB",
     "QdrantDB",
     "MilvusDB",
+    "WeaviateDB",
     # Utils
     "ActionSubtaskEntry",
     "DictInternalMemory",
