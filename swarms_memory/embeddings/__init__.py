@@ -1,12 +1,5 @@
-"""
-Embeddings module for swarms-memory.
-
-This module provides flexible embedding functionality through various providers
-using LiteLLM and custom embedding functions.
-"""
-
-from .litellm_embeddings import LiteLLMEmbeddings
-from .embedding_utils import (
+from swarms_memory.embeddings.litellm_embeddings import LiteLLMEmbeddings
+from swarms_memory.embeddings.embedding_utils import (
     detect_litellm_model,
     setup_unified_embedding,
     get_embedding_function,
