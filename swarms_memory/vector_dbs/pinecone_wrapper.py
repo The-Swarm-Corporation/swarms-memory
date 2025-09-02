@@ -292,7 +292,8 @@ class PineconeMemory(BaseVectorDatabase):
         query_text: str,
         top_k: int = 5,
         filter_dict: Optional[Dict[str, Any]] = None,
-    ) -> List[Dict[str, Any]]:
+        return_metadata: bool = False,
+    ):
         """
         Query the Pinecone index for similar documents.
 
@@ -300,9 +301,10 @@ class PineconeMemory(BaseVectorDatabase):
             query_text (str): The query string.
             top_k (int): The number of top results to return. Defaults to 5.
             filter_dict (Optional[Dict[str, Any]]): Metadata filter for the query.
+            return_metadata (bool): If True, return full metadata. If False, return concatenated text.
 
         Returns:
-            List[Dict[str, Any]]: A list of dictionaries containing the top_k most similar documents.
+            Union[List[Dict[str, Any]], str]: Formatted results based on return_metadata flag.
         """
         try:
             logger.info(f"Querying with: {query_text}")
@@ -332,7 +334,15 @@ class PineconeMemory(BaseVectorDatabase):
                 )
 
             logger.success(f"Query completed. Found {len(formatted_results)} results.")
-            return formatted_results
+            
+            if return_metadata:
+                return formatted_results
+            else:
+                # Return concatenated text for Swarms agent compatibility
+                return "\n\n".join(
+                    result["metadata"].get("text", str(result["metadata"]))
+                    for result in formatted_results
+                )
             
         except Exception as e:
             logger.error(f"Query failed: {str(e)}")

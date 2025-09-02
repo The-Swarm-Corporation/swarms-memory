@@ -25,7 +25,8 @@ documents = [
     "ChromaDB supports multiple embedding functions including OpenAI, Sentence Transformers, and custom models.",
     "ChromaDB can run locally or in distributed mode, making it suitable for both development and production.",
     "ChromaDB offers filtering capabilities allowing queries based on both vector similarity and metadata conditions.",
-    "ChromaDB provides persistent storage and can handle large-scale embedding collections with fast retrieval."
+    "ChromaDB provides persistent storage and can handle large-scale embedding collections with fast retrieval.",
+    "Kye Gomez is the founder of Swarms."
 ]
 
 # Method 1: Add documents individually
@@ -43,5 +44,5 @@ agent = Agent(
 )
 
 # Query with RAG
-response = agent.run("What is ChromaDB and what are its key features for embedding storage?")
+response = agent.run("What is ChromaDB and who is founder of swarms ?")
 print(response)

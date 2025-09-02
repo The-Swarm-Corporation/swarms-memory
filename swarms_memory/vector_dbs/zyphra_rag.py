@@ -118,7 +118,20 @@ class PPRRetriever:
         """
         num_nodes = graph.shape[0]
         personalization = np.dot(query_embedding, embeddings.T)
-        personalization = personalization / personalization.sum()
+        
+        # Prevent division by zero
+        personalization_sum = personalization.sum()
+        if np.abs(personalization_sum) < 1e-10 or np.isnan(personalization_sum):
+            # If all similarities are effectively zero, use uniform distribution
+            personalization = np.ones(len(personalization)) / len(personalization)
+        else:
+            # Normalize to create a proper probability distribution
+            personalization = np.abs(personalization)  # Take absolute values to handle negative similarities
+            personalization_sum = personalization.sum()
+            if personalization_sum > 0:
+                personalization = personalization / personalization_sum
+            else:
+                personalization = np.ones(len(personalization)) / len(personalization)
 
         scores = personalization.copy()
         for _ in range(self.num_iterations):

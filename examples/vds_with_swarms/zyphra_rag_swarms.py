@@ -11,19 +11,23 @@ from swarms import Agent
 from swarms_memory.vector_dbs.zyphra_rag import RAGSystem
 
 
-# Simple LLM wrapper for demonstration
-class SimpleLLM(torch.nn.Module):
+# Simple LLM wrapper that uses the agent's model
+class AgentLLMWrapper(torch.nn.Module):
     """
-    Simple LLM wrapper for demonstration purposes.
-    In production, replace this with your actual language model.
+    LLM wrapper that integrates with the Swarms Agent's model.
     """
     def __init__(self):
         super().__init__()
+        self.agent = None
+        
+    def set_agent(self, agent):
+        """Set the agent reference for LLM calls"""
+        self.agent = agent
         
     def forward(self, prompt: str) -> str:
-        # This is a placeholder - in production you would use a real LLM
-        # like OpenAI's GPT, Hugging Face models, etc.
-        return f"Based on the context: {prompt[:200]}... [Generated response would appear here]"
+        if self.agent:
+            return self.agent.llm(prompt)
+        return f"Generated response for: {prompt[:100]}..."
     
     def __call__(self, prompt: str) -> str:
         return self.forward(prompt)
@@ -50,22 +54,27 @@ class ZyphraRAGWrapper:
 
 
 if __name__ == '__main__':
+    # Create LLM wrapper
+    llm = AgentLLMWrapper()
+    
     # Initialize Zyphra RAG System
-    llm = SimpleLLM()
     rag_db = RAGSystem(
         llm=llm,
         vocab_size=10000  # Vocabulary size for sparse embeddings
     )
 
-    # Prepare document text - Zyphra RAG processes entire documents
-    document_text = " ".join([
+    # Add documents to the knowledge base
+    documents = [
         "Zyphra RAG is an advanced retrieval system that combines sparse embeddings with graph-based retrieval algorithms.",
         "Zyphra RAG uses Personalized PageRank (PPR) to identify the most relevant document chunks for a given query.",
         "The system builds a graph representation of document chunks based on embedding similarities between text segments.",
         "Zyphra RAG employs sparse embeddings using word count methods for fast, CPU-friendly text representation.",
         "The graph builder creates adjacency matrices representing similarity relationships between document chunks.",
-        "Zyphra RAG excels at context-aware document retrieval through its graph-based approach to semantic search."
-    ])
+        "Zyphra RAG excels at context-aware document retrieval through its graph-based approach to semantic search.",
+        "Kye Gomez is the founder of Swarms."
+    ]
+    
+    document_text = " ".join(documents)
 
     # Process the document (creates chunks, embeddings, and graph)
     chunks, embeddings, graph = rag_db.process_document(document_text, chunk_size=100)
@@ -82,7 +91,10 @@ if __name__ == '__main__':
         dynamic_temperature_enabled=True,
         long_term_memory=rag_wrapper
     )
+    
+    # Connect the LLM wrapper to the agent
+    llm.set_agent(agent)
 
     # Query with RAG
-    response = agent.run("What is Zyphra RAG and how does its graph-based retrieval work?")
+    response = agent.run("What is Zyphra RAG and who is the founder of Swarms?")
     print(response)

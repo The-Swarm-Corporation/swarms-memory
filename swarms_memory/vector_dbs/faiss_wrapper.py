@@ -432,11 +432,93 @@ class FAISSDB(BaseVectorDatabase):
                     break
 
             logger.success(f"Query completed. Found {len(formatted_results)} results.")
+            
+            # Check if this is being called in a RAG context by examining the stack
+            # If so, return formatted text instead of raw results
+            import inspect
+            frame = inspect.currentframe()
+            try:
+                # Look for signs this is a RAG query from swarms framework
+                for i in range(10):  # Check up to 10 frames up
+                    if frame is None:
+                        break
+                    frame = frame.f_back
+                    if frame and frame.f_code:
+                        func_name = frame.f_code.co_name
+                        filename = frame.f_code.co_filename
+                        # Check if we're being called from swarms RAG handling
+                        if ('rag' in func_name.lower() or 
+                            'handle' in func_name.lower() or 
+                            'dynamic_auto_chunking' in filename or
+                            'swarms' in filename):
+                            # Return formatted text instead of list for RAG context
+                            text_chunks = []
+                            for result in formatted_results:
+                                metadata = result.get("metadata", {})
+                                text_content = metadata.get("text", "")
+                                if text_content:
+                                    text_chunks.append(text_content)
+                            formatted_text = "\n\n".join(text_chunks)
+                            logger.info(f"Detected RAG context, returning formatted text with {len(text_chunks)} chunks")
+                            return formatted_text
+            except:
+                # If stack inspection fails, continue with normal behavior
+                pass
+            finally:
+                del frame
+            
             return formatted_results
             
         except Exception as e:
             logger.error(f"Query failed: {str(e)}")
             raise Exception(f"Query failed: {str(e)}")
+
+    def query_as_text(
+        self,
+        query_text: str,
+        top_k: int = 5,
+        filter_dict: Optional[Dict[str, Any]] = None,
+        separator: str = "\n\n"
+    ) -> str:
+        """
+        Query the vector database and return results formatted as text string.
+        
+        This method is specifically designed for RAG operations where the retrieved
+        documents need to be concatenated into a single string for context.
+        
+        Args:
+            query_text (str): The query string.
+            top_k (int): The number of top results to return. Defaults to 5.
+            filter_dict (Optional[Dict[str, Any]]): Metadata filter for the query.
+            separator (str): Separator between documents. Defaults to double newline.
+            
+        Returns:
+            str: Concatenated text content of retrieved documents.
+        """
+        try:
+            results = self.query(query_text, top_k, filter_dict)
+            
+            if not results:
+                logger.warning("No results found for query")
+                return ""
+            
+            # Extract text content from each result
+            text_chunks = []
+            for result in results:
+                metadata = result.get("metadata", {})
+                text_content = metadata.get("text", "")
+                if text_content:
+                    text_chunks.append(text_content)
+            
+            # Join all text chunks with separator
+            formatted_text = separator.join(text_chunks)
+            logger.success(f"Formatted {len(text_chunks)} documents as text string")
+            
+            return formatted_text
+            
+        except Exception as e:
+            logger.error(f"Query as text failed: {str(e)}")
+            raise Exception(f"Query as text failed: {str(e)}")
 
     def get(self, doc_id: str) -> Optional[Dict[str, Any]]:
         """
