@@ -1,5 +1,5 @@
 """
-Human-Testable ChromaDB Wrapper Test Suite
+ChromaDB Wrapper Test Suite
 
 This script demonstrates and tests the modernized ChromaDB wrapper functionality
 including LiteLLM integration, CRUD operations, and collection management.

@@ -1,5 +1,5 @@
 """
-Human-Testable Qdrant Wrapper Test Suite
+Qdrant Wrapper Test Suite
 
 This script demonstrates and tests the modernized Qdrant wrapper functionality
 including LiteLLM integration, CRUD operations, and collection management.

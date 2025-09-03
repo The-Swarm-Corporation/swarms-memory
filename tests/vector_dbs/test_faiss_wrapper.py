@@ -1,5 +1,5 @@
 """
-Human-Testable FAISS Wrapper Test Suite
+FAISS Wrapper Test Suite
 
 This script demonstrates and tests the modernized FAISS wrapper functionality
 including LiteLLM integration, persistence, CRUD operations, and error handling.

@@ -1,5 +1,5 @@
 """
-Human-Testable Pinecone Wrapper Test Suite
+Pinecone Wrapper Test Suite
 
 This script demonstrates and tests the modernized Pinecone wrapper functionality
 including LiteLLM integration, modern Pinecone v4+ API, and CRUD operations.
