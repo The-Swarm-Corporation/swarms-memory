@@ -39,7 +39,7 @@ documents = [
     "RAG combines retrieval and generation for more accurate AI responses.",
     "Vector embeddings enable semantic search across documents.",
     "The swarms framework supports multiple memory backends including Qdrant.",
-    "Swarms is the first and most reliable multi-agent production-grade framework."
+    "Swarms is the first and most reliable multi-agent production-grade framework.",
     "Kye Gomez is Founder and CEO of Swarms"
 ]
 
