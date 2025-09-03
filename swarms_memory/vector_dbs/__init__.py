@@ -4,6 +4,8 @@ from swarms_memory.vector_dbs.faiss_wrapper import FAISSDB
 from swarms_memory.vector_dbs.base_vectordb import BaseVectorDatabase
 from swarms_memory.vector_dbs.singlestore_wrapper import SingleStoreDB
 from swarms_memory.vector_dbs.qdrant_wrapper import QdrantDB
+from swarms_memory.vector_dbs.milvus_wrapper import MilvusDB
+from swarms_memory.vector_dbs.weaviate_wrapper import WeaviateDB
 
 __all__ = [
     "ChromaDB",
@@ -12,4 +14,6 @@ __all__ = [
     "BaseVectorDatabase",
     "SingleStoreDB",
     "QdrantDB",
+    "MilvusDB",
+    "WeaviateDB",
 ]

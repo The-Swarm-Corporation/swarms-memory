@@ -1,149 +1,178 @@
-from abc import ABC
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Optional
 from loguru import logger
 
 
 class BaseVectorDatabase(ABC):
     """
-    Abstract base class for a database.
+    Abstract base class for vector databases.
 
-    This class defines the interface for interacting with a database.
-    Subclasses must implement the abstract methods to provide the
-    specific implementation details for connecting to a database,
-    executing queries, and performing CRUD operations.
-
+    This class defines the standardized interface for all vector database implementations
+    in the swarms-memory package. It provides common functionality and enforces
+    consistent method signatures across different vector database providers.
+    
+    All vector database wrappers should inherit from this class and implement
+    the abstract methods.
     """
-
-    def connect(self):
+    
+    def __init__(self):
+        """Initialize the base vector database."""
+        self.logger = logger
+    
+    @abstractmethod
+    def add(self, doc: str, metadata: Optional[Dict[str, Any]] = None) -> str:
         """
-        Connect to the database.
-
-        This method establishes a connection to the database.
-
-        """
-
-    def close(self):
-        """
-        Close the database connection.
-
-        This method closes the connection to the database.
-
-        """
-
-    def query(self, query: str):
-        """
-        Execute a database query.
-
-        This method executes the given query on the database.
-
-        Parameters:
-            query (str): The query to be executed.
-
-        """
-
-    def fetch_all(self):
-        """
-        Fetch all rows from the result set.
-
-        This method retrieves all rows from the result set of a query.
-
+        Add a document to the vector database.
+        
+        Args:
+            doc (str): The document text to add
+            metadata (Optional[Dict[str, Any]]): Additional metadata for the document
+            
         Returns:
-            list: A list of dictionaries representing the rows.
-
-        """
-
-    def fetch_one(self):
-        """
-        Fetch one row from the result set.
-
-        This method retrieves one row from the result set of a query.
-
-        Returns:
-            dict: A dictionary representing the row.
-
-        """
-
-    def add(self, doc: str):
-        """
-        Add a new record to the database.
-
-        This method adds a new record to the specified table in the database.
-
-        Parameters:
-            table (str): The name of the table.
-            data (dict): A dictionary representing the data to be added.
-
-        """
-
-    def get(self, query: str):
-        """
-        Get a record from the database.
-
-        This method retrieves a record from the specified table in the database based on the given ID.
-
-        Parameters:
-            table (str): The name of the table.
-            id (int): The ID of the record to be retrieved.
-
-        Returns:
-            dict: A dictionary representing the retrieved record.
-
-        """
-
-    def update(self, doc):
-        """
-        Update a record in the database.
-
-        This method updates a record in the specified table in the database based on the given ID.
-
-        Parameters:
-            table (str): The name of the table.
-            id (int): The ID of the record to be updated.
-            data (dict): A dictionary representing the updated data.
-
-        """
-
-    def delete(self, message):
-        """
-        Delete a record from the database.
-
-        This method deletes a record from the specified table in the database based on the given ID.
-
-        Parameters:
-            table (str): The name of the table.
-            id (int): The ID of the record to be deleted.
-
-        """
-
-    def print_all(self):
-        """
-        Print all records in the database.
-
-        This method prints all records in the specified table in the database.
-
+            str: The unique identifier for the added document
         """
         pass
-
-    def log_query(self, query: str = None):
+    
+    @abstractmethod
+    def query(
+        self, 
+        query_text: str, 
+        top_k: int = 5,
+        filter_dict: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
         """
-        Log the query.
-
-        This method logs the query that was executed on the database.
-
-        Parameters:
-            query (str): The query that was executed.
-
+        Query the vector database for similar documents.
+        
+        Args:
+            query_text (str): The query text to search for
+            top_k (int): Number of results to return (default: 5)
+            filter_dict (Optional[Dict[str, Any]]): Metadata filters to apply
+            
+        Returns:
+            List[Dict[str, Any]]: List of matching documents with metadata and scores
         """
-        logger.info(f"Query: {query}")
-
-    def log_retrieved_data(self, data: list = None):
+        pass
+    
+    def get(self, doc_id: str) -> Optional[Dict[str, Any]]:
         """
-        Log the retrieved data.
-
-        This method logs the data that was retrieved from the database.
-
-        Parameters:
-            data (dict): The data that was retrieved.
-
+        Get a specific document by ID.
+        
+        Args:
+            doc_id (str): The unique identifier of the document
+            
+        Returns:
+            Optional[Dict[str, Any]]: The document data if found, None otherwise
         """
-        for d in data:
-            logger.info(f"Retrieved Data: {d}")
+        # Default implementation - can be overridden by subclasses
+        self.logger.warning(f"{self.__class__.__name__}.get() not implemented")
+        return None
+    
+    def delete(self, doc_id: str) -> bool:
+        """
+        Delete a document by ID.
+        
+        Args:
+            doc_id (str): The unique identifier of the document to delete
+            
+        Returns:
+            bool: True if deletion was successful, False otherwise
+        """
+        # Default implementation - can be overridden by subclasses
+        self.logger.warning(f"{self.__class__.__name__}.delete() not implemented")
+        return False
+    
+    def clear(self) -> bool:
+        """
+        Clear all documents from the vector database.
+        
+        Returns:
+            bool: True if clearing was successful, False otherwise
+        """
+        # Default implementation - can be overridden by subclasses
+        self.logger.warning(f"{self.__class__.__name__}.clear() not implemented")
+        return False
+    
+    def count(self) -> int:
+        """
+        Get the number of documents in the vector database.
+        
+        Returns:
+            int: Number of documents, -1 if not supported
+        """
+        # Default implementation - can be overridden by subclasses
+        self.logger.warning(f"{self.__class__.__name__}.count() not implemented")
+        return -1
+    
+    # Optional methods that can be implemented by subclasses
+    def update(self, doc_id: str, doc: str, metadata: Optional[Dict[str, Any]] = None) -> bool:
+        """
+        Update an existing document.
+        
+        Args:
+            doc_id (str): The unique identifier of the document to update
+            doc (str): The new document content
+            metadata (Optional[Dict[str, Any]]): Updated metadata
+            
+        Returns:
+            bool: True if update was successful, False otherwise
+        """
+        # Default implementation: delete and re-add
+        if self.delete(doc_id):
+            new_id = self.add(doc, metadata)
+            return new_id is not None
+        return False
+    
+    # Utility methods for consistent behavior
+    def log_query(self, query: str) -> None:
+        """
+        Log a query operation.
+        
+        Args:
+            query (str): The query text that was executed
+        """
+        self.logger.info(f"Query executed: {query[:100]}..." if len(query) > 100 else f"Query executed: {query}")
+    
+    def log_add_operation(self, doc: str, doc_id: str) -> None:
+        """
+        Log an add operation.
+        
+        Args:
+            doc (str): The document that was added
+            doc_id (str): The ID assigned to the document
+        """
+        doc_preview = doc[:50] + "..." if len(doc) > 50 else doc
+        self.logger.info(f"Document added with ID {doc_id}: {doc_preview}")
+    
+    def health_check(self) -> Dict[str, Any]:
+        """
+        Perform a health check on the vector database.
+        
+        Returns:
+            Dict[str, Any]: Health status information
+        """
+        return {
+            "status": "unknown",
+            "message": f"{self.__class__.__name__}.health_check() not implemented",
+            "timestamp": None
+        }
+    
+    # Legacy method compatibility - with deprecation warnings
+    def connect(self) -> None:
+        """
+        Legacy method for backward compatibility.
+        Modern vector databases handle connections automatically.
+        """
+        self.logger.warning(
+            f"{self.__class__.__name__}.connect() is deprecated and will be removed. "
+            "Modern vector databases handle connections automatically during initialization."
+        )
+    
+    def close(self) -> None:
+        """
+        Legacy method for backward compatibility.
+        Modern vector databases handle connections automatically.
+        """
+        self.logger.warning(
+            f"{self.__class__.__name__}.close() is deprecated and will be removed. "
+            "Modern vector databases handle cleanup automatically."
+        )

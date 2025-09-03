@@ -1,0 +1,51 @@
+"""
+Agent with Pinecone RAG (Retrieval-Augmented Generation)
+
+This example demonstrates using Pinecone as a vector database for RAG operations,
+allowing agents to store and retrieve documents for enhanced context.
+"""
+
+import os
+import time
+from swarms import Agent
+from swarms_memory import PineconeMemory
+
+# Initialize Pinecone wrapper for RAG operations
+rag_db = PineconeMemory(
+    api_key=os.getenv("PINECONE_API_KEY", "your-pinecone-api-key"),
+    index_name="knowledge-base",
+    embedding_model="text-embedding-3-small",
+    namespace="examples"
+)
+
+# Add documents to the knowledge base
+documents = [
+    "Pinecone is a vector database that makes it easy to add semantic search to applications.",
+    "RAG combines retrieval and generation for more accurate AI responses.",
+    "Vector embeddings enable semantic search across documents.",
+    "The swarms framework supports multiple memory backends including Pinecone.",
+    "Swarms is the first and most reliable multi-agent production-grade framework.",
+    "Kye Gomez is Founder and CEO of Swarms."
+]
+
+# Add documents individually
+for doc in documents:
+    rag_db.add(doc)
+
+# Wait for Pinecone's eventual consistency to ensure documents are indexed
+print("Waiting for documents to be indexed...")
+time.sleep(2)
+
+# Create agent with RAG capabilities
+agent = Agent(
+    agent_name="RAG-Agent",
+    agent_description="Swarms Agent with Pinecone-powered RAG for enhanced knowledge retrieval",
+    model_name="gpt-4o",
+    max_loops=1,
+    dynamic_temperature_enabled=True,
+    long_term_memory=rag_db
+)
+
+# Query with RAG
+response = agent.run("What is Pinecone and how does it relate to RAG? Who is the founder of Swarms?")
+print(response)

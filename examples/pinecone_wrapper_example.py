@@ -1,59 +1,107 @@
-# Example usage of the PineconeMemory class
+# Modern Pinecone Wrapper Example
+# This example demonstrates the modernized PineconeMemory class with LiteLLM embedding support
 
-# Import necessary libraries
 import os
 from swarms_memory import PineconeMemory
+from dotenv import load_dotenv
 
-# Define your Pinecone API key and environment
-API_KEY = os.getenv(
-    "PINECONE_API_KEY"
-)  # Make sure to set your Pinecone API key in the environment
-ENVIRONMENT = "us-west1-gcp"  # Example environment
-INDEX_NAME = "my-pinecone-index"  # Name of the Pinecone index to use
+# Load environment variables
+load_dotenv()
 
-# Create an instance of the PineconeMemory class
-pinecone_memory = PineconeMemory(
-    api_key=API_KEY,
-    environment=ENVIRONMENT,
-    index_name=INDEX_NAME,
-    dimension=768,  # Dimension of the embeddings
-)
-
-
-# Function to add documents to the Pinecone index
-def add_documents():
-    """Add sample documents to the Pinecone index."""
+def main():
+    """
+    Demonstrate the modernized PineconeMemory usage.
+    """
+    
+    # Modern initialization - no deprecated environment parameter
+    pinecone_memory = PineconeMemory(
+        api_key=os.getenv("PINECONE_API_KEY"),
+        index_name="swarms-modern-example",
+        embedding_model="text-embedding-3-small",  # LiteLLM model
+        dimension=1536,  # Will be auto-detected
+        metric="cosine",
+        cloud="aws",
+        region="us-east-1",
+        namespace="example",
+        api_key_embedding=os.getenv("OPENAI_API_KEY")  # For embedding provider
+    )
+    
+    print("🚀 Modern Pinecone Memory Example")
+    print(f"Health Check: {pinecone_memory.health_check()}")
+    
+    # Sample documents to add
     documents = [
-        "This is the first document about machine learning.",
-        "This document discusses deep learning techniques.",
-        "Here we talk about natural language processing.",
-        "This is another document related to artificial intelligence.",
-        "This document covers supervised and unsupervised learning.",
+        {
+            "text": "Pinecone is a vector database that makes it easy to add semantic search to applications.",
+            "metadata": {"category": "database", "source": "documentation"}
+        },
+        {
+            "text": "LiteLLM provides a unified interface for using different embedding models from various providers.",
+            "metadata": {"category": "embeddings", "source": "documentation"}
+        },
+        {
+            "text": "Vector databases store high-dimensional vectors and enable similarity search at scale.",
+            "metadata": {"category": "concepts", "source": "explanation"}
+        },
+        {
+            "text": "RAG systems combine retrieval and generation for more accurate AI responses.",
+            "metadata": {"category": "architecture", "source": "explanation"}
+        }
     ]
-
+    
+    # Add documents
+    print("\nAdding documents...")
+    doc_ids = []
     for doc in documents:
-        # Adding documents to the Pinecone index with optional metadata
-        pinecone_memory.add(doc, metadata={"source": "example"})
+        doc_id = pinecone_memory.add(doc["text"], metadata=doc["metadata"])
+        doc_ids.append(doc_id)
+        print(f"Added: {doc['text'][:50]}... (ID: {doc_id})")
+    
+    # Query examples
+    queries = [
+        "What is Pinecone?",
+        "How do embedding models work?",
+        "What are vector databases?",
+        "Tell me about RAG systems"
+    ]
+    
+    print("\nQuerying documents...")
+    for query in queries:
+        print(f"\n❓ Query: {query}")
+        results = pinecone_memory.query(query_text=query, top_k=2)
+        
+        for i, result in enumerate(results, 1):
+            score = result["score"]
+            text = result["metadata"]["text"]
+            category = result["metadata"].get("category", "unknown")
+            print(f"   {i}. [{category}] Score: {score:.3f}")
+            print(f"      {text[:100]}...")
+    
+    # Demonstrate CRUD operations
+    print("\n🛠️  CRUD Operations...")
+    
+    # Get a specific document
+    first_doc_id = doc_ids[0]
+    retrieved_doc = pinecone_memory.get(first_doc_id)
+    if retrieved_doc:
+        print(f"📖 Retrieved doc: {retrieved_doc['metadata']['text'][:50]}...")
+    
+    # Count documents
+    doc_count = pinecone_memory.count()
+    print(f"Total documents: {doc_count}")
+    
+    # Delete a document
+    if len(doc_ids) > 2:
+        delete_id = doc_ids[-1]
+        success = pinecone_memory.delete(delete_id)
+        if success:
+            print(f"🗑️  Deleted document: {delete_id}")
+            print(f"Documents after deletion: {pinecone_memory.count()}")
+    
+    # Health check after operations
+    print(f"\n🏥 Final Health Check: {pinecone_memory.health_check()}")
+    
+    print("\nModern Pinecone example completed!")
 
-
-# Function to query documents from the Pinecone index
-def query_documents(query: str):
-    """Query the Pinecone index for similar documents."""
-    results = pinecone_memory.query(
-        query, top_k=3
-    )  # Retrieve the top 3 similar documents
-    print("\nQuery Results:")
-    for result in results:
-        print(
-            f"ID: {result['id']}, Score: {result['score']}, Metadata: {result['metadata']}"
-        )
-
-
-# Adding documents to the Pinecone index
-add_documents()
-
-# Querying the Pinecone index
-query_documents("Tell me about machine learning techniques.")
-
-# Close the Pinecone index (if needed, cleanup)
-# Note: Pinecone does not require a close method as it is a managed service.
+if __name__ == "__main__":
+    main()
