@@ -637,7 +637,6 @@ files = [
     {file = "faiss_cpu-1.11.0.post1-cp39-cp39-musllinux_1_2_aarch64.whl", hash = "sha256:dc12b3f89cf48be3f2a20b37f310c3f1a7a5708fdf705f88d639339a24bb590b"},
     {file = "faiss_cpu-1.11.0.post1-cp39-cp39-musllinux_1_2_x86_64.whl", hash = "sha256:773fa45aa98a210ab4e2c17c1b5fb45f6d7e9acb4979c9a0b320b678984428ac"},
     {file = "faiss_cpu-1.11.0.post1-cp39-cp39-win_amd64.whl", hash = "sha256:6240c4b1551eedc07e76813c2e14a1583a1db6c319a92a3934bf212d0e4c7791"},
-    {file = "faiss_cpu-1.11.0.post1.tar.gz", hash = "sha256:06b1ea9ddec9e4d9a41c8ef7478d493b08d770e9a89475056e963081eed757d1"},
 ]
 
 [package.dependencies]
@@ -3958,19 +3957,19 @@ files = [
 
 [[package]]
 name = "singlestoredb"
-version = "1.15.2"
+version = "1.15.4"
 description = "Interface to the SingleStoreDB database and workspace management APIs"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "singlestoredb-1.15.2-cp38-abi3-macosx_10_9_universal2.whl", hash = "sha256:849980da1ba1c92f0d357561ada9c73907e239b09ae52a479f4bb97295e03689"},
-    {file = "singlestoredb-1.15.2-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:07503d4e70f48a3281deb24b9321d9ef94d3ba89a299112b1a8cfc8c8e660386"},
-    {file = "singlestoredb-1.15.2-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:434b21ba09e1cb348eee3db639fab042ee1e9c7bebadc9ac1e9cb90abd0a8ce3"},
-    {file = "singlestoredb-1.15.2-cp38-abi3-win32.whl", hash = "sha256:91c19a244e9bafc0bfdde47e377b98425147cd1e7f3f96fea0d574433633e66f"},
-    {file = "singlestoredb-1.15.2-cp38-abi3-win_amd64.whl", hash = "sha256:90ca6cc7b7177a6740c5eb0e732b5e4f4240b523d15e514844079085adb25dbc"},
-    {file = "singlestoredb-1.15.2-py3-none-any.whl", hash = "sha256:2647de5b35920a2795145894168c2d5ae458eb19313d9a4922edd5d42f0e8beb"},
-    {file = "singlestoredb-1.15.2.tar.gz", hash = "sha256:7a0ad77c7b2059b5e0e716cf55cd812bec5eaa22c30e866c010b95a4c1e3f8e4"},
+    {file = "singlestoredb-1.15.4-cp38-abi3-macosx_10_9_universal2.whl", hash = "sha256:baba6633524d80e6fb5cb17ada5057908de3892191675bd980009547fbfb7178"},
+    {file = "singlestoredb-1.15.4-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:41f518bbb8861c84922a4e03a515dc56fd17fc049ba52eeb8ae6a5e4f236f3bf"},
+    {file = "singlestoredb-1.15.4-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:692542d51c41790d94c76c844b6d3ba69a4f630bc90da7518bba208c92d727e3"},
+    {file = "singlestoredb-1.15.4-cp38-abi3-win32.whl", hash = "sha256:40a372989133b5a6c41b2a4e96b0bceeb2056b21ec1736b4c3fe5fca473ad481"},
+    {file = "singlestoredb-1.15.4-cp38-abi3-win_amd64.whl", hash = "sha256:688d473ee94976ad92e3dca546e80aece0772f4391177448b43232a541d7aef3"},
+    {file = "singlestoredb-1.15.4-py3-none-any.whl", hash = "sha256:320b38cdd42c3e547f7282fa2c7d7a2ebdfbfa78dcdc530fded3d362816cbe82"},
+    {file = "singlestoredb-1.15.4.tar.gz", hash = "sha256:32fbbac2017633f8cb6e20b82687afe25869a30342a177dc0ed2cd26ccd77fe3"},
 ]
 
 [package.dependencies]
